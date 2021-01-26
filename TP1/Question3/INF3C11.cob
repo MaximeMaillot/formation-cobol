@@ -31,7 +31,7 @@
            STOP RUN.
       * PARCOURS ASSURES
        ASSURES-L.
-      * Affichage tant que le matricule n'est pas égal à 999999
+      * Affichage tant que le matricule n'est pas egal à 999999
            IF MATRICULE NOT EQUAL 999999
                DISPLAY "MATRICULE : " MATRICULE
                DISPLAY "NOM PRENOM : " NOM-PRENOM

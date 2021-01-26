@@ -21,7 +21,7 @@
               10  PRIME-DE-BASE   PIC 9(4)V9(2).
               10  BONUS-MALUS     PIC X(1).
               10  TAUX            PIC 9(2).
-      * Structure pour récuperer la date       
+      * Structure pour recuperer la date       
        01  FORMAT-DATE.
            05  DATE-N.
                10 YEAR-N          PIC 9(4).
@@ -81,9 +81,9 @@
       * PARCOURS ASSURES
        ASSURES-L.
       * Affiche les informations du client
-      * STRING concatène dans une variable (ici Date-F)
-      * DELIMITED BY SIZE : Concatène tout
-      * DELIMITED BY SPACE : Concatène jusqu'à trouver un espace
+      * STRING concatene dans une variable (ici Date-F)
+      * DELIMITED BY SIZE : Concatene tout
+      * DELIMITED BY SPACE : Concatene jusqu'à trouver un espace
            STRING "Le " DELIMITED BY SIZE
             DAY-N DELIMITED BY SIZE
             "/" DELIMITED BY SIZE
@@ -134,7 +134,7 @@
               DISPLAY FORMAT-FACTURE
               COMPUTE PRIX-TOTAL-C = PRIME-DE-BASE - PRIX-BM-C
            END-IF
-      * INITIALIZE remet les numériques à 0 et les chaînes en vide     
+      * INITIALIZE remet les numeriques à 0 et les chaînes en vide     
            INITIALIZE TAUX-B
            INITIALIZE TYPE-B
            MOVE PRIX-TOTAL-C TO PRIX-FACTURE
@@ -142,4 +142,5 @@
            DISPLAY FORMAT-FACTURE
            DISPLAY LIGNE
       * Lire la prochaine ligne d'ASSURES
-           ACCEPT ASSURES.
+           ACCEPT ASSURES
+           .
