@@ -26,8 +26,8 @@
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
        PROCEDURE DIVISION.
-      * WITH TEST BEFORE => EQUIVALENT DO WHILE
-           PERFORM ASSURES-L WITH TEST BEFORE UNTIL MATRICULE = 999999.
+      * Perform le paragraphe ASSURES-L qui se trouve plus bas
+           PERFORM ASSURES-L UNTIL MATRICULE = 999999.
            STOP RUN.
       * PARCOURS ASSURES
        ASSURES-L.

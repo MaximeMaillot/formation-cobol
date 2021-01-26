@@ -27,11 +27,11 @@
       ****************************************************************
        PROCEDURE DIVISION.
            ACCEPT ASSURES
-      * BEFORE => EQUIVALENT DO WHILE
-           PERFORM ASSURES-L WITH TEST BEFORE UNTIL MATRICULE = 999999.
+           PERFORM ASSURES-L UNTIL MATRICULE = 999999.
            STOP RUN.
       * PARCOURS ASSURES
        ASSURES-L.
+      * Affichage tant que le matricule n'est pas égal à 999999
            IF MATRICULE NOT EQUAL 999999
                DISPLAY "MATRICULE : " MATRICULE
                DISPLAY "NOM PRENOM : " NOM-PRENOM
