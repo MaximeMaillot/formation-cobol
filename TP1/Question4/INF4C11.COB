@@ -53,6 +53,7 @@
        01  FORMAT-FACTURE.
            05  PIC X(1) VALUE '|'.
            05  NOM-FACTURE PIC X(20).
+      *    Variable de formatage des prix
            05  PRIX-FACTURE PIC Z(5)9.99.
            05  PIC X(20).
            05  TYPE-B PIC X(10).
@@ -64,8 +65,6 @@
       * Variables de calcul    
        77  PRIX-BM-C              PIC 9(4)V9(2).
        77  PRIX-TOTAL-C           PIC 9(5)V9(2).
-      * Variable de formattage des prix      
-       77  PRIX-E                 PIC Z(5)9.99.
       * Permet d'afficher une ligne de '-' 
        77  LIGNE PIC X(80) VALUE ALL '-'.
 
