@@ -25,58 +25,70 @@
        01 CODE-4.
            05 TYPE-P           PIC X(1).
            05 PRIME            PIC 9(4)V9(2).
+       01 ERROR-F.
+           05 MATRICULE-M      PIC X(13).
+           05 TYPE-M           PIC X(9).
+           05 ERROR-M          PIC X(50).
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
        PROCEDURE DIVISION.
            ACCEPT MOUVEMENT
-      * BEFORE => EQUIVALENT DO WHILE
-           PERFORM MOUVEMENT-L
-            WITH TEST BEFORE UNTIL MATRICULE = 200046.
+           MOVE "MATRICULE" TO MATRICULE-M
+           MOVE "TYPE" TO TYPE-M
+           MOVE "MESSAGE D'ERREUR" TO ERROR-M
+           DISPLAY ERROR-F
+           PERFORM MOUVEMENT-L UNTIL MATRICULE = 200046.
            STOP RUN.
       * PARCOURS MOUVEMENT
        MOUVEMENT-L.
-           DISPLAY "MOUVEMENT : " MOUVEMENT
+           MOVE MATRICULE TO MATRICULE-M
+           MOVE "?" TO TYPE-M
            IF MATRICULE IS NOT NUMERIC
-              DISPLAY "1 - Matricule non numérique"
+              MOVE "1 - Matricule non numerique" TO ERROR-M              
            ELSE
             EVALUATE CODE-MOUVEMENT
              WHEN 1
                MOVE CODE-N TO CODE-1
                IF SIGNE NOT EQUAL '-' AND SIGNE NOT EQUAL '+'
-                 DISPLAY "3 - Signe différent de + ou -"
-               END-IF
-               IF TAUX IS NOT NUMERIC
-                 DISPLAY "4 - Taux non numérique"
+                 MOVE "3 - Signe different de + ou -" TO ERROR-M
+               ELSE
+                IF TAUX IS NOT NUMERIC
+                  MOVE "4 - Taux non numerique" TO ERROR-M
+                END-IF
                END-IF
              WHEN 2
                MOVE CODE-N TO CODE-2
                IF NOM-PRENOM EQUAL SPACE
-                 DISPLAY "5 - Le nom n'est pas renseigné"
+                 MOVE "5 - Le nom n'est pas renseigne" TO ERROR-M
                END-IF
              WHEN 3
                MOVE CODE-N TO CODE-3
                IF ADRESSE EQUAL SPACE
                 AND CODE-POSTAL EQUAL SPACE
                 AND VILLE EQUAL SPACE
-                 DISPLAY "6 - Au moins une zone doit être saisie"
+                 MOVE "6 - Au moins une zone doit etre saisie"
+                  TO ERROR-M
                ELSE
                    IF CODE-POSTAL IS NOT NUMERIC
                     AND CODE-POSTAL NOT EQUAL SPACE
-                     DISPLAY "7 - Code postal invalide"
+                     MOVE "7 - Code postal invalide" TO ERROR-M
                    END-IF
                END-IF
              WHEN 4
                MOVE CODE-N TO CODE-4
-               IF (TYPE-P < 0) OR (TYPE-P > 9)
-                 DISPLAY "8 - Type de prime invalide"
-               END-IF
-               IF PRIME IS NOT NUMERIC
-                 DISPLAY "9 - Prime non numérique"
+               IF TYPE-P IS NOT NUMERIC
+                 MOVE "8 - Type de prime invalide" TO ERROR-M
+               ELSE
+                IF PRIME IS NOT NUMERIC
+                 MOVE "9 - Prime non numerique" TO ERROR-M
+                END-IF 
                END-IF
              WHEN OTHER
-               DISPLAY "2 - Code mouvement inconnu"
+               MOVE "2 - Code mouvement inconnu" TO ERROR-M
             END-EVALUATE
            END-IF
-           ACCEPT MOUVEMENT.
+           DISPLAY ERROR-F
+           ACCEPT MOUVEMENT
+           .
