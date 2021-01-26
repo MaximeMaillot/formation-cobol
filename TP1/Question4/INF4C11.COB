@@ -43,7 +43,7 @@
            DISPLAY "PRIME DE BASE : " PRIX-DISP
            COMPUTE PRIX-BM = PRIME-DE-BASE * TAUX / 100
            DISPLAY "---"
-           IF BONUS-MALUS = 'B'
+           IF BONUS-MALUS = 'M'
               MOVE PRIX-BM TO PRIX-DISP
               DISPLAY "MAJORATION : " PRIX-DISP " / MALUS : " TAUX "%"
               COMPUTE PRIX-TOTAL = PRIME-DE-BASE + PRIX-BM
