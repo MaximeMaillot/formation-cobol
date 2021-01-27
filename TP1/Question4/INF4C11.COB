@@ -35,10 +35,9 @@
        01  FORMAT-QUITTANCE.
            05 PIC X(1) VALUE '|'.
            05 PIC X(20) VALUE ' QUITTANCE DE PRIME'.
+           05 MATRICULE-F PIC X(10).
            05 PIC X(10).
-           05 PIC X(1) VALUE '/'.
-           05 PIC X(10).
-           05 DATE-F PIC X(29).
+           05 DATE-F PIC X(30).
            05 PIC X(1) VALUE '|'.
       * Nom, Adresse et Code Postal/Ville
        01  FORMAT-IDENTITE.
@@ -96,6 +95,7 @@
             MINUTE-N DELIMITED BY SIZE
             INTO DATE-F
            END-STRING
+           MOVE MATRICULE TO MATRICULE-F
            DISPLAY FORMAT-QUITTANCE
            MOVE NOM-PRENOM TO NOM-IDENTITE
            DISPLAY FORMAT-IDENTITE
