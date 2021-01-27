@@ -55,7 +55,6 @@
                    DISPLAY "BONUS MALUS : " BONUS-MALUS
                    DISPLAY "TAUX : " TAUX
                    DISPLAY "----------------------------------------------"
-               ACCEPT ASSURES
              END-READ
            END-PERFORM
            CLOSE F-ASSURES
