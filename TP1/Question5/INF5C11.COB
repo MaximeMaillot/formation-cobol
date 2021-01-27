@@ -175,18 +175,18 @@
            ACCEPT WEEKDAY-N FROM DAY-OF-WEEK
            EVALUATE WEEKDAY-N
              WHEN 1
-			         MOVE "DIMANCHE" TO WEEKDAY-NAME
+			         MOVE "LUNDI" TO WEEKDAY-NAME
              WHEN 2
-               MOVE "LUNDI" TO WEEKDAY-NAME
-             WHEN 3
                MOVE "MARDI" TO WEEKDAY-NAME
-             WHEN 4
+             WHEN 3
                MOVE "MERCREDI" TO WEEKDAY-NAME
-             WHEN 5
+             WHEN 4
                MOVE "JEUDI" TO WEEKDAY-NAME
-             WHEN 6
+             WHEN 5
                MOVE "VENDREDI" TO WEEKDAY-NAME
-             WHEN 7
+             WHEN 6
                MOVE "SAMEDI" TO WEEKDAY-NAME
+             WHEN 7
+               MOVE "DIMANCHE" TO WEEKDAY-NAME
            .
            
