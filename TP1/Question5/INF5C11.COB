@@ -175,7 +175,7 @@
            ACCEPT WEEKDAY-N FROM DAY-OF-WEEK
            EVALUATE WEEKDAY-N
              WHEN 1
-			         MOVE "LUNDI" TO WEEKDAY-NAME
+               MOVE "LUNDI" TO WEEKDAY-NAME
              WHEN 2
                MOVE "MARDI" TO WEEKDAY-NAME
              WHEN 3
