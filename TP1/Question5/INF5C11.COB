@@ -29,6 +29,7 @@
            05 MATRICULE-M      PIC X(13).
            05 TYPE-M           PIC X(9).
            05 ERROR-M          PIC X(50).
+       77  HAS-ERROR           PIC 9 VALUE 0.
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
@@ -43,25 +44,27 @@
            STOP RUN.
       * PARCOURS MOUVEMENT
        MOUVEMENT-L.
-           MOVE MATRICULE TO MATRICULE-M
-           MOVE "?" TO TYPE-M
            IF MATRICULE IS NOT NUMERIC
-              MOVE "1 - Matricule non numerique" TO ERROR-M              
+              MOVE "1 - Matricule non numerique" TO ERROR-M
+              PERFORM HAS-ERROR-F
            ELSE
             EVALUATE CODE-MOUVEMENT
              WHEN 1
                MOVE CODE-N TO CODE-1
                IF SIGNE NOT EQUAL '-' AND SIGNE NOT EQUAL '+'
                  MOVE "3 - Signe different de + ou -" TO ERROR-M
+                 PERFORM HAS-ERROR-F
                ELSE
                 IF TAUX IS NOT NUMERIC
                   MOVE "4 - Taux non numerique" TO ERROR-M
+                  PERFORM HAS-ERROR-F
                 END-IF
                END-IF
              WHEN 2
                MOVE CODE-N TO CODE-2
                IF NOM-PRENOM EQUAL SPACE
                  MOVE "5 - Le nom n'est pas renseigne" TO ERROR-M
+                 PERFORM HAS-ERROR-F
                END-IF
              WHEN 3
                MOVE CODE-N TO CODE-3
@@ -70,25 +73,38 @@
                 AND VILLE EQUAL SPACE
                  MOVE "6 - Au moins une zone doit etre saisie"
                   TO ERROR-M
+                  PERFORM HAS-ERROR-F
                ELSE
                    IF CODE-POSTAL IS NOT NUMERIC
                     AND CODE-POSTAL NOT EQUAL SPACE
                      MOVE "7 - Code postal invalide" TO ERROR-M
+                     PERFORM HAS-ERROR-F
                    END-IF
                END-IF
              WHEN 4
                MOVE CODE-N TO CODE-4
                IF TYPE-P IS NOT NUMERIC
                  MOVE "8 - Type de prime invalide" TO ERROR-M
+                 PERFORM HAS-ERROR-F
                ELSE
                 IF PRIME IS NOT NUMERIC
                  MOVE "9 - Prime non numerique" TO ERROR-M
-                END-IF 
+                 PERFORM HAS-ERROR-F
+                END-IF
                END-IF
              WHEN OTHER
                MOVE "2 - Code mouvement inconnu" TO ERROR-M
+               PERFORM HAS-ERROR-F
             END-EVALUATE
            END-IF
-           DISPLAY ERROR-F
+           IF HAS-ERROR EQUAL 1
+               DISPLAY ERROR-F
+           END-IF
+           MOVE 0 TO HAS-ERROR
            ACCEPT MOUVEMENT
+           .
+       HAS-ERROR-F.
+           MOVE MATRICULE TO MATRICULE-M
+           MOVE CODE-MOUVEMENT TO TYPE-M
+           MOVE 1 TO HAS-ERROR
            .
