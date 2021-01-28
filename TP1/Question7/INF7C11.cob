@@ -72,12 +72,12 @@
            05 PIC X(10).
            05 NOM-PRENOM-F PIC X(20).
            05 PIC X(30).
-           05 MONTANT-F PIC Z(5)9.99.
+           05 MONTANT-F PIC Z(5)9,99.
        01 TOT-FORMAT.
            05 TOT-N PIC X(20).
            05 PIC X(1) VALUE ':'.
            05 PIC X(39).
-           05 TOT-F PIC Z(5)9.99.
+           05 TOT-F PIC Z(5)9,99.
        77 LIGNE PIC X(80) VALUE ALL '-'.
        01 HALF-LIGNE.
            05 PIC X(10).
@@ -138,11 +138,11 @@
            .
        DISPLAY-DEPT.
            MOVE DEPARTEMENT TO DEPT-F
-           DISPLAY DEPT-FORMAT 
+           DISPLAY DEPT-FORMAT
            .
        DISPLAY-TYPE.
            MOVE TYPE-VEHICULE TO TYPE-F
-           DISPLAY TYPE-FORMAT 
+           DISPLAY TYPE-FORMAT
            .
        DISPLAY-MONTANT.
            MOVE NOM-PRENOM TO NOM-PRENOM-F
