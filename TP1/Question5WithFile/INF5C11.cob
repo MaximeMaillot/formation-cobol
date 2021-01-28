@@ -103,10 +103,10 @@
        MOUVEMENT-L.
            IF MATRICULE IS NOT NUMERIC
               MOVE "1 - Matricule non numerique" TO ERROR-M
-              ADD 1 TO CPT-ERROR-MAT 
+              ADD 1 TO CPT-ERROR-MAT
               PERFORM HAS-ERROR-P
            ELSE
-      * Switch case     
+      * Switch case
             EVALUATE CODE-MOUVEMENT
              WHEN 1
                MOVE CODE-N TO CODE-1
@@ -116,7 +116,7 @@
                  PERFORM HAS-ERROR-P
                ELSE
                 IF TAUX IS NOT NUMERIC
-                  ADD 1 TO CPT-ERROR-1 
+                  ADD 1 TO CPT-ERROR-1
                   MOVE "4 - Taux non numerique" TO ERROR-M
                   PERFORM HAS-ERROR-P
                 END-IF
@@ -125,7 +125,7 @@
                MOVE CODE-N TO CODE-2
                IF NOM-PRENOM EQUAL SPACE
                  MOVE "5 - Le nom n'est pas renseigne" TO ERROR-M
-                 ADD 1 TO CPT-ERROR-2 
+                 ADD 1 TO CPT-ERROR-2
                  PERFORM HAS-ERROR-P
                END-IF
              WHEN 3
@@ -135,13 +135,13 @@
                 AND VILLE EQUAL SPACE
                  MOVE "6 - Au moins une zone doit etre saisie"
                   TO ERROR-M
-                 ADD 1 TO CPT-ERROR-3 
+                 ADD 1 TO CPT-ERROR-3
                  PERFORM HAS-ERROR-P
                ELSE
                    IF CODE-POSTAL IS NOT NUMERIC
                     AND CODE-POSTAL NOT EQUAL SPACE
                      MOVE "7 - Code postal invalide" TO ERROR-M
-                     ADD 1 TO CPT-ERROR-3 
+                     ADD 1 TO CPT-ERROR-3
                      PERFORM HAS-ERROR-P
                    END-IF
                END-IF
@@ -149,12 +149,12 @@
                MOVE CODE-N TO CODE-4
                IF TYPE-P IS NOT NUMERIC
                  MOVE "8 - Type de prime invalide" TO ERROR-M
-                 ADD 1 TO CPT-ERROR-4 
+                 ADD 1 TO CPT-ERROR-4
                  PERFORM HAS-ERROR-P
                ELSE
                 IF PRIME IS NOT NUMERIC
                  MOVE "9 - Prime non numerique" TO ERROR-M
-                 ADD 1 TO CPT-ERROR-4 
+                 ADD 1 TO CPT-ERROR-4
                  PERFORM HAS-ERROR-P
                 END-IF
                END-IF
@@ -171,7 +171,7 @@
            ADD 1 TO CPT-MVT
            .
        HAS-ERROR-P.
-           ADD 1 TO CPT-ERROR-TOT 
+           ADD 1 TO CPT-ERROR-TOT
            MOVE MATRICULE TO MATRICULE-M
            MOVE CODE-MOUVEMENT TO TYPE-M
            MOVE 1 TO HAS-ERROR
@@ -180,7 +180,7 @@
            PERFORM GET-DATE
            MOVE "API11" TO APIN
            MOVE WEEKDAY-NAME TO WEEKDAY-F
-           MOVE " le " TO SEPARATOR-F 
+           MOVE " le " TO SEPARATOR-F
            STRING
             DAY-N DELIMITED BY SIZE
             "/" DELIMITED BY SIZE
@@ -195,7 +195,7 @@
            INITIALIZE SEPARATOR-F
            INITIALIZE WEEKDAY-F
            INITIALIZE DATE-F
-           STRING 
+           STRING
             HOUR-N DELIMITED BY SIZE
             ":" DELIMITED BY SIZE
             MINUTE-N DELIMITED BY SIZE
@@ -247,7 +247,7 @@
            MOVE "--------------------------------" TO MAIN-TITLE
            DISPLAY TITLE-F
            DISPLAY SPACE
-           MOVE "10 - Nombre d enregistrements lu sur FMVT" 
+           MOVE "10 - Nombre d enregistrements lu sur FMVT"
             TO DESCRIPTION
            MOVE CPT-MVT TO CPT-ERROR-N
            DISPLAY ERROR-CPT-F
