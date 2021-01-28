@@ -98,6 +98,7 @@
              END-READ
            END-PERFORM
            PERFORM DISPLAY-STATS
+           CLOSE F-MVT
            STOP RUN.
       * PARCOURS MOUVEMENT
        MOUVEMENT-L.
