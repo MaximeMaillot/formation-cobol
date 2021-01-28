@@ -10,17 +10,17 @@
        WORKING-STORAGE SECTION.
       *--------------DEFINITION DES VARIABLES---------------------
        01  ASSURES.
-           05  MATRICULE          PIC 9(6).
-           05  NOM-PRENOM         PIC X(20).
-           05  ADRESSE.
-               10  RUE-ADRESSE    PIC X(18).
-               10  CODE-POSTAL    PIC 9(5).
-               10  VILLE          PIC X(12).
-           05  ASSURANCE.
-               10  TYPE-VEHICULE  PIC X(1).
-               10  PRIME-DE-BASE  PIC 9(4)V9(2).
-               10  BONUS-MALUS    PIC X(1).
-               10  TAUX           PIC 9(2).
+          05  MATRICULE          PIC 9(6).
+          05  NOM-PRENOM         PIC X(20).
+          05  ADRESSE.
+              10  RUE-ADRESSE    PIC X(18).
+              10  CODE-POSTAL    PIC 9(5).
+              10  VILLE          PIC X(12).
+          05  ASSURANCE.
+              10  TYPE-VEHICULE  PIC X(1).
+              10  PRIME-DE-BASE  PIC 9(4)V9(2).
+              10  BONUS-MALUS    PIC X(1).
+              10  TAUX           PIC 9(2).
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
