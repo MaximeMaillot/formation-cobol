@@ -38,15 +38,15 @@
          05 CPT-ANOMALIE           PIC 9(4) VALUE 0.
        
        01 FORMAT-COMPTA.
-         05 NUM-STOCK-F           PIC 9(6).
+         05 NUM-STOCK-F            PIC 9(6).
          05                        PIC X(10).
          05 PRIX-TOT-F             PIC Z(5)9.
        01 FORMAT-STATS.
-         05 PIC X(43) VALUE 
+         05                        PIC X(43) VALUE 
            'Nombre d’enregistrement lus dans fichier '.
-         05 FICHIER-N PIC X(12).
-         05 PIC X(3) VALUE ' : '.
-         05 CPT-F PIC Z(3)9.
+         05 FICHIER-N              PIC X(12).
+         05                        PIC X(3) VALUE ' : '.
+         05 CPT-F                  PIC Z(3)9.
        
        77 EOF-TRUE                 PIC X VALUE "Y".
        77 EOF                      PIC X VALUE "F".
@@ -56,9 +56,9 @@
       ****************************************************************
        PROCEDURE DIVISION.
            PERFORM 10000-INIT-PGM
-           PERFORM 20000-TRAITEMENT.
-           PERFORM 30000-END-PGM.
-           STOP RUN.    
+           PERFORM 20000-TRAITEMENT
+           PERFORM 30000-END-PGM
+           STOP RUN.
        10000-INIT-PGM.
       *---------------* 
            OPEN INPUT F-STOCK
@@ -70,7 +70,7 @@
       *-----------------* 
            PERFORM UNTIL EOF = EOF-TRUE
              READ F-STOCK
-              AT END                 
+              AT END
                 MOVE EOF-TRUE TO EOF
               NOT AT END
                 ADD 1 TO CPT-STOCK
@@ -92,10 +92,10 @@
       *-------------*
            IF (NB-PRODUIT < NB-MIN)
              DISPLAY "Réapprovisionnement du produit N° " NUM-STOCK
-             ADD 1 TO CPT-ANOMALIE    
+             ADD 1 TO CPT-ANOMALIE
            .
        23000-DEPASSEMENT.
-      *------------------* 
+      *------------------*
            IF (NB-PRODUIT >= NB-MIN AND PU-PRODUIT > 150)
              MOVE NUM-STOCK TO NUM-STOCK-F
              COMPUTE PRIX-TOT-F = NB-PRODUIT * PU-PRODUIT
@@ -117,15 +117,15 @@
            MOVE 'STOCK' TO FICHIER-N
            MOVE CPT-STOCK TO CPT-F
            PERFORM 31100-WRITE-STATS
-      * Write Compta     
+      * Write Compta
            MOVE 'COMPTA' TO FICHIER-N
            MOVE CPT-COMPTA TO CPT-F
            PERFORM 31100-WRITE-STATS
-      * Write Depassement     
+      * Write Depassement
            MOVE 'DEPASSEMENT' TO FICHIER-N
            MOVE CPT-DEPASSEMENT TO CPT-F
            PERFORM 31100-WRITE-STATS
-      * Write Anomalie     
+      * Write Anomalie
            MOVE 'ANOMALIE' TO FICHIER-N
            MOVE CPT-ANOMALIE TO CPT-F
            PERFORM 31100-WRITE-STATS
