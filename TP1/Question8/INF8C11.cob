@@ -39,41 +39,51 @@
          05 PERCENT-VIDE           PIC 9(2)V9(2).
 
        01 FORMAT-HEADER.
-         05 PIC X(10).
-         05 PIC X(70) VALUE 'Statistique sur les programmes'.
+         05                        PIC X(10).
+         05                        PIC X(70) 
+          VALUE 'Statistique sur les programmes'.
        01 FORMAT-LIGNE.
-         05 PIC X(10).
-         05 PIC X(3) VALUE ' - '.
-         05 LIGNE-N PIC X(30).
-         05 PIC X(3) VALUE ' : '.
-         05 CPT-LIGNE-N PIC 9(4).
+         05                        PIC X(10).
+         05                        PIC X(3) VALUE ' - '.
+         05 LIGNE-N                PIC X(30).
+         05                        PIC X(3) VALUE ' : '.
+         05 CPT-LIGNE-N            PIC 9(4).
        01 FORMAT-PERCENT.
-         05 PIC X(10).
-         05 PIC X(3) VALUE ' - '.
-         05 PERCENT-N PIC X(30).
-         05 PIC X(3) VALUE ' : '.
-         05 PERCENT-EDIT PIC Z9,99.
-         05 PIC X(1) VALUE '%'.
+         05                        PIC X(10).
+         05                        PIC X(3) VALUE ' - '.
+         05 PERCENT-N              PIC X(30).
+         05                        PIC X(3) VALUE ' : '.
+         05 PERCENT-EDIT           PIC Z9,99.
+         05                        PIC X(1) VALUE '%'.
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
        PROCEDURE DIVISION.
+           PERFORM 10000-INIT
+           PERFORM 20000-TRAITEMENT
+           PERFORM 30000-FIN
+           STOP RUN.
+       10000-INIT.
            OPEN INPUT F-CODE
-           PERFORM DISPLAY-HEADER
+           PERFORM 11000-DISPLAY-HEADER
+           .
+       20000-TRAITEMENT.
            PERFORM UNTIL EOF = EOF-TRUE
              READ F-CODE INTO W-CODE
                AT END
                  MOVE EOF-TRUE TO EOF
                NOT AT END
-                 PERFORM COUNT-LIGNE
+                 PERFORM 21000-COUNT-LIGNE
              END-READ
            END-PERFORM
+           .
+       30000-FIN.
            CLOSE F-CODE
-           PERFORM CALCUL-PERCENT
-           PERFORM DISPLAY-STATS
-           STOP RUN.
-       COUNT-LIGNE.
+           PERFORM 31000-CALCUL-PERCENT
+           PERFORM 32000-DISPLAY-STATS
+           .
+       21000-COUNT-LIGNE.
            ADD 1 TO CPT-LIGNE-PROG
            IF W-CODE = SPACE
              ADD 1 TO CPT-LIGNE-VIDE
@@ -82,17 +92,17 @@
              ADD 1 TO CPT-LIGNE-COMMENT
            END-IF
            .
-       CALCUL-PERCENT.
+       31000-CALCUL-PERCENT.
            COMPUTE PERCENT-COMMENT =
             CPT-LIGNE-COMMENT * 100 / CPT-LIGNE-PROG
            COMPUTE PERCENT-VIDE =
             CPT-LIGNE-VIDE * 100 / CPT-LIGNE-PROG
            .
-       DISPLAY-HEADER.
+       11000-DISPLAY-HEADER.
            DISPLAY FORMAT-HEADER
            .
-       DISPLAY-STATS SECTION.
-        DISPLAY-STATS-LIGNE.
+       32000-DISPLAY-STATS SECTION.
+        32100-DISPLAY-STATS-LIGNE.
            MOVE 'Nombre de lignes du programme' TO LIGNE-N
            MOVE CPT-LIGNE-PROG TO CPT-LIGNE-N
            DISPLAY FORMAT-LIGNE
@@ -103,7 +113,7 @@
            MOVE CPT-LIGNE-VIDE TO CPT-LIGNE-N
            DISPLAY FORMAT-LIGNE
            .
-        DISPLAY-STATS-PERCENT.
+        32200-DISPLAY-STATS-PERCENT.
            MOVE 'Pourcentages de commentaires' TO PERCENT-N
            MOVE PERCENT-COMMENT TO PERCENT-EDIT
            DISPLAY FORMAT-PERCENT
