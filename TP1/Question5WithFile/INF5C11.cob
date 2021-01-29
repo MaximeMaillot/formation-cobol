@@ -24,59 +24,59 @@
       *--------------DEFINITION DES VARIABLES---------------------
        01 CR-MVT PIC 99.
        01 W-MOUVEMENT.
-           05 MATRICULE        PIC 9(6).
-           05 CODE-MOUVEMENT   PIC 9(1).
-           05 CODE-N           PIC X(40).
-       01 CODE-1.
-           05 SIGNE            PIC X(1).
-           05 TAUX             PIC 9(2).
-       01 CODE-2.
-           05 NOM-PRENOM       PIC X(20).
-       01 CODE-3.
-           05 ADRESSE          PIC X(18).
-           05 CODE-POSTAL      PIC 9(5).
-           05 VILLE            PIC X(12).
-       01 CODE-4.
-           05 TYPE-P           PIC X(1).
-           05 PRIME            PIC 9(4)V9(2).
+         05 MATRICULE        PIC 9(6).
+         05 CODE-MOUVEMENT   PIC 9(1).
+         05 CODE-N           PIC X(73).
+         05 CODE-1 REDEFINES CODE-N.
+           10 SIGNE            PIC X(1).
+           10 TAUX             PIC 9(2).
+         05 CODE-2 REDEFINES CODE-N.
+           10 NOM-PRENOM       PIC X(20).
+         05 CODE-3 REDEFINES CODE-N.
+           10 ADRESSE          PIC X(18).
+           10 CODE-POSTAL      PIC 9(5).
+           10 VILLE            PIC X(12).
+         05 CODE-4 REDEFINES CODE-N.
+           10 TYPE-P           PIC X(1).
+           10 PRIME            PIC 9(4)V9(2).
        01 FORMAT-DATE.
-           05  DATE-N.
-             10 YEAR-N         PIC 9(4).
-             10 MONTH-N        PIC 9(2).
-             10 DAY-N          PIC 9(2).
-           05 TIME-N.
-             10 HOUR-N         PIC 9(2).
-             10 MINUTE-N       PIC 9(2).
-             10 SECOND-N       PIC 9(2).
-           05 WEEKDAY-N        PIC 9.
+         05  DATE-N.
+           10 YEAR-N         PIC 9(4).
+           10 MONTH-N        PIC 9(2).
+           10 DAY-N          PIC 9(2).
+         05 TIME-N.
+           10 HOUR-N         PIC 9(2).
+           10 MINUTE-N       PIC 9(2).
+           10 SECOND-N       PIC 9(2).
+         05 WEEKDAY-N        PIC 9.
        01 HEADER-F.
-           05 APIN             PIC X(38).
-           05 WEEKDAY-F        PIC X(10).
-           05 SEPARATOR-F      PIC X(4).
-           05 DATE-F           PIC X(20).
+         05 APIN             PIC X(38).
+         05 WEEKDAY-F        PIC X(10).
+         05 SEPARATOR-F      PIC X(4).
+         05 DATE-F           PIC X(20).
        01 TITLE-F.
-           05                  PIC X(20).
-           05 MAIN-TITLE       PIC X(32).
-           05                  PIC X(20).
+         05                  PIC X(20).
+         05 MAIN-TITLE       PIC X(32).
+         05                  PIC X(20).
        01 ERROR-F.
-           05 MATRICULE-M      PIC X(11).
-           05                  PIC X(2).
-           05 TYPE-M           PIC X(7).
-           05                  PIC X(2).
-           05 ERROR-M          PIC X(50).
+         05 MATRICULE-M      PIC X(11).
+         05                  PIC X(2).
+         05 TYPE-M           PIC X(7).
+         05                  PIC X(2).
+         05 ERROR-M          PIC X(50).
        01 CPT.
-           05 CPT-MVT          PIC 9(4) VALUE 0.
-           05 CPT-ERROR-TOT    PIC 9(4) VALUE 0.
-           05 CPT-ERROR-1      PIC 9(4) VALUE 0.
-           05 CPT-ERROR-2      PIC 9(4) VALUE 0.
-           05 CPT-ERROR-3      PIC 9(4) VALUE 0.
-           05 CPT-ERROR-4      PIC 9(4) VALUE 0.
-           05 CPT-ERROR-MAT    PIC 9(4) VALUE 0.
-           05 CPT-ERROR-CODE   PIC 9(4) VALUE 0.
+         05 CPT-MVT          PIC 9(4) VALUE 0.
+         05 CPT-ERROR-TOT    PIC 9(4) VALUE 0.
+         05 CPT-ERROR-1      PIC 9(4) VALUE 0.
+         05 CPT-ERROR-2      PIC 9(4) VALUE 0.
+         05 CPT-ERROR-3      PIC 9(4) VALUE 0.
+         05 CPT-ERROR-4      PIC 9(4) VALUE 0.
+         05 CPT-ERROR-MAT    PIC 9(4) VALUE 0.
+         05 CPT-ERROR-CODE   PIC 9(4) VALUE 0.
        01 ERROR-CPT-F.
-           05 DESCRIPTION      PIC X(50).
-           05                  PIC X(3) VALUE ' : '.
-           05 CPT-ERROR-N      PIC 9(4).
+         05 DESCRIPTION      PIC X(50).
+         05                  PIC X(3) VALUE ' : '.
+         05 CPT-ERROR-N      PIC 9(4).
        77 HAS-ERROR            PIC 9 VALUE 0.
        77 WEEKDAY-NAME         PIC X(10).
        77 EOF-TRUE             PIC X VALUE "Y".
@@ -110,7 +110,6 @@
       * Switch case
             EVALUATE CODE-MOUVEMENT
              WHEN 1
-               MOVE CODE-N TO CODE-1
                IF SIGNE NOT EQUAL '-' AND SIGNE NOT EQUAL '+'
                  MOVE "3 - Signe different de + ou -" TO ERROR-M
                  ADD 1 TO CPT-ERROR-1
@@ -123,14 +122,12 @@
                 END-IF
                END-IF
              WHEN 2
-               MOVE CODE-N TO CODE-2
                IF NOM-PRENOM EQUAL SPACE
                  MOVE "5 - Le nom n'est pas renseigne" TO ERROR-M
                  ADD 1 TO CPT-ERROR-2
                  PERFORM HAS-ERROR-P
                END-IF
              WHEN 3
-               MOVE CODE-N TO CODE-3
                IF ADRESSE EQUAL SPACE
                 AND CODE-POSTAL EQUAL SPACE
                 AND VILLE EQUAL SPACE
@@ -147,7 +144,6 @@
                    END-IF
                END-IF
              WHEN 4
-               MOVE CODE-N TO CODE-4
                IF TYPE-P IS NOT NUMERIC
                  MOVE "8 - Type de prime invalide" TO ERROR-M
                  ADD 1 TO CPT-ERROR-4
