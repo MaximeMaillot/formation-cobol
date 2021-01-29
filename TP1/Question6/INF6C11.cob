@@ -87,8 +87,7 @@
          05 DATE-F             PIC X(20).   
        01 TITLE-F.
          05                    PIC X(20).
-         05 MAIN-TITLE         PIC X(32).
-         05                    PIC X(20).
+         05 MAIN-TITLE         PIC X(52).
       * --------------------------------------------               
       * Affichage d'une erreur
        01 ERROR-F.
@@ -115,12 +114,13 @@
            PERFORM 10000-INIT
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-FIN
-           STOP RUN.
-
+           STOP RUN.      
+      * Ouvre le fichier
        10000-INIT.
            OPEN INPUT F-MVTMAJ
            PERFORM 11000-CONSTRUCT-HEADER
            .
+      * Lit le fichier
        20000-TRAITEMENT.
            PERFORM UNTIL EOF = EOF-TRUE
              READ F-MVTMAJ INTO W-MOUVEMENT
@@ -131,6 +131,7 @@
              END-READ
            END-PERFORM
            .
+      * Ferme le fichier
        30000-FIN.
            PERFORM 31000-DISPLAY-STATS
            CLOSE F-MVTMAJ
@@ -170,6 +171,7 @@
                ADD 1 TO CPT-ERROR-CODE
             END-EVALUATE
            .
+      * Si code-mvt = 1     
        21110-MVT-CODE-1.
            IF SIGNE NOT EQUAL '-' AND SIGNE NOT EQUAL '+'
              MOVE "3 - Signe different de + ou -" TO ERROR-M
@@ -183,6 +185,7 @@
              END-IF
            END-IF
            .
+      * Si code-mvt = 2
        21120-MVT-CODE-2.
            IF NOM-PRENOM EQUAL SPACE
              MOVE "5 - Le nom n'est pas renseigne" TO ERROR-M
@@ -190,6 +193,7 @@
              ADD 1 TO CPT-ERROR-2
            END-IF
            .
+      * Si code-mvt = 3
        21130-MVT-CODE-3.
            IF ADRESSE EQUAL SPACE
             AND CODE-POSTAL EQUAL SPACE
@@ -207,6 +211,7 @@
                END-IF
            END-IF
            .
+      * Si code-mvt = 4
        21140-MVT-CODE-4.
            IF TYPE-P IS NOT NUMERIC
              MOVE "8 - Type de prime invalide" TO ERROR-M
@@ -220,6 +225,7 @@
              END-IF
            END-IF
            .
+      * Si code-mvt = 5
        21150-MVT-CODE-5.
       *    Test telephone fixe 
            IF (TEL-FIXE-C < 1) OR (TEL-FIXE-C > 7)
@@ -247,13 +253,14 @@
              END-IF
            END-IF
            .
-      * Populate an error format
+      * Affiche une erreur formaté
        21200-HAS-ERROR-P.
            MOVE MATRICULE TO MATRICULE-M
            MOVE CODE-MOUVEMENT TO TYPE-M
            DISPLAY ERROR-F
            ADD 1 TO CPT-ERROR-TOT
            .
+      * Affiche le header en haut de page
        11000-CONSTRUCT-HEADER.
            PERFORM 11100-GET-DATE
            MOVE "API11" TO APIN
@@ -297,6 +304,7 @@
            MOVE "----------------------" TO ERROR-M
            DISPLAY ERROR-F
            .
+      * Recupère la date actuelle     
        11100-GET-DATE.
            ACCEPT DATE-C FROM DATE YYYYMMDD
            ACCEPT TIME-C FROM TIME
@@ -317,6 +325,7 @@
              WHEN 7
                MOVE "DIMANCHE" TO WEEKDAY-NAME
            .
+      * Affiche les statistiques
        31000-DISPLAY-STATS.
            DISPLAY SPACE
            MOVE "Statistique sur controle du fichier mouvement"

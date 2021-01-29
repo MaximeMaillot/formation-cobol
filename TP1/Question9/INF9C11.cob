@@ -30,13 +30,15 @@
        01 DEPASSEMENT              PIC X(80).
        fd F-STATS.
        01 STATS                    PIC X(80).
+
        WORKING-STORAGE SECTION.
+      * ------------- Compteurs ----------- 
        01 CPT.
          05 CPT-STOCK              PIC 9(4) VALUE 0.
          05 CPT-COMPTA             PIC 9(4) VALUE 0.
          05 CPT-DEPASSEMENT        PIC 9(4) VALUE 0.
          05 CPT-ANOMALIE           PIC 9(4) VALUE 0.
-       
+      * ------------ Format ----------------- 
        01 FORMAT-COMPTA.
          05 NUM-STOCK-F            PIC 9(6).
          05                        PIC X(10).
@@ -47,7 +49,7 @@
          05 FICHIER-N              PIC X(12).
          05                        PIC X(3) VALUE ' : '.
          05 CPT-F                  PIC Z(3)9.
-       
+      * Variable de gestion de fin de fichier 
        77 EOF-TRUE                 PIC X VALUE "Y".
        77 EOF                      PIC X VALUE "F".
 
@@ -59,15 +61,14 @@
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-END-PGM
            STOP RUN.
+      * Ouvre stock, compta et depassement
        10000-INIT-PGM.
-      *---------------* 
            OPEN INPUT F-STOCK
            OPEN OUTPUT F-COMPTA
            OPEN OUTPUT F-DEPASSEMENT
-           OPEN OUTPUT F-STATS
            .
+      * Parcours stock
        20000-TRAITEMENT.
-      *-----------------* 
            PERFORM UNTIL EOF = EOF-TRUE
              READ F-STOCK
               AT END
@@ -80,22 +81,22 @@
              END-READ
            END-PERFORM
            .
+      * Gere le fichier compta
        21000-COMPTA.
-      *-------------*
            MOVE NUM-STOCK TO NUM-STOCK-F
            COMPUTE PRIX-TOT-F = NB-PRODUIT * PU-PRODUIT
            MOVE FORMAT-COMPTA TO COMPTA
            WRITE COMPTA
            ADD 1 TO CPT-COMPTA
            .
+      * Affiche une alerte en cas de produit insuffisant
        22000-ALERTE.
-      *-------------*
            IF (NB-PRODUIT < NB-MIN)
              DISPLAY "Réapprovisionnement du produit N° " NUM-STOCK
              ADD 1 TO CPT-ANOMALIE
            .
+      * Gere le fichier depassement
        23000-DEPASSEMENT.
-      *------------------*
            IF (NB-PRODUIT >= NB-MIN AND PU-PRODUIT > 150)
              MOVE NUM-STOCK TO NUM-STOCK-F
              COMPUTE PRIX-TOT-F = NB-PRODUIT * PU-PRODUIT
@@ -103,35 +104,37 @@
              WRITE DEPASSEMENT
              ADD 1 TO CPT-DEPASSEMENT
            .
+      * Affiche les stats et ferme les fichiers
        30000-END-PGM.
-      *--------------*
            PERFORM 31000-STATS
            CLOSE F-STOCK
            CLOSE f-compta
            CLOSE f-depassement
-           close f-stats
            .
+      * Gere le fichier stats
        31000-STATS.
-      *------------*
-      * Write Stock
+           OPEN OUTPUT F-STATS
+      * Stock
            MOVE 'STOCK' TO FICHIER-N
            MOVE CPT-STOCK TO CPT-F
            PERFORM 31100-WRITE-STATS
-      * Write Compta
+      * Compta
            MOVE 'COMPTA' TO FICHIER-N
            MOVE CPT-COMPTA TO CPT-F
            PERFORM 31100-WRITE-STATS
-      * Write Depassement
+      * Depassement
            MOVE 'DEPASSEMENT' TO FICHIER-N
            MOVE CPT-DEPASSEMENT TO CPT-F
            PERFORM 31100-WRITE-STATS
-      * Write Anomalie
+      * Anomalie
            MOVE 'ANOMALIE' TO FICHIER-N
            MOVE CPT-ANOMALIE TO CPT-F
            PERFORM 31100-WRITE-STATS
+      *     
+           CLOSE F-STATS
            .
+      * Ecrit dans stats     
        31100-WRITE-STATS.
-      *------------------*
            MOVE FORMAT-STATS TO STATS
            WRITE STATS
            .
