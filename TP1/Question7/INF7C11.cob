@@ -50,148 +50,159 @@
 
       * --------------- FORMAT --------------
        01 HEADER-FORMAT.
-           05 PIC X(15).
-           05 PIC X(42) VALUE 'Statistique par departement'.
-           05 PIC X(15).
+           05                      PIC X(15).
+           05                      PIC X(42) 
+            VALUE 'Statistique par departement'.
+           05                      PIC X(15).
        01 MONTANT-HEADER-FORMAT.
-           05 PIC X(10).
-           05 PIC X(20) VALUE 'NOM / PRENOM'.
-           05 PIC X(30).
-           05 PIC X(12) VALUE 'MONTANT'.
+           05                      PIC X(10).
+           05                      PIC X(20) VALUE 'NOM / PRENOM'.
+           05                      PIC X(30).
+           05                      PIC X(12) VALUE 'MONTANT'.
        01 DEPT-FORMAT.
-           05 PIC X(15) VALUE 'DEPARTEMENT'.
-           05 PIC X(1) VALUE ':'.
-           05 PIC X(5).
-           05 DEPT-F PIC 9(2).
+           05                      PIC X(15) VALUE 'DEPARTEMENT'.
+           05                      PIC X(1) VALUE ':'.
+           05                      PIC X(5).
+           05 DEPT-F               PIC 9(2).
        01 TYPE-FORMAT.
-           05 PIC X(15) VALUE 'TYPE'.
-           05 PIC X(1) VALUE ':'.
-           05 PIC X(5).
-           05 TYPE-F PIC X(1).
+           05                      PIC X(15) VALUE 'TYPE'.
+           05                      PIC X(1) VALUE ':'.
+           05                      PIC X(5).
+           05 TYPE-F               PIC X(1).
        01 MONTANT-FORMAT.
-           05 PIC X(10).
-           05 NOM-PRENOM-F PIC X(20).
-           05 PIC X(30).
-           05 MONTANT-F PIC Z(5)9,99.
+           05                      PIC X(10).
+           05 NOM-PRENOM-F         PIC X(20).
+           05                      PIC X(30).
+           05 MONTANT-F            PIC Z(5)9,99.
        01 TOT-FORMAT.
-           05 TOT-N PIC X(20).
-           05 PIC X(1) VALUE ':'.
-           05 PIC X(39).
-           05 TOT-F PIC Z(5)9,99.
-       77 LIGNE PIC X(80) VALUE ALL '-'.
+           05 TOT-N                PIC X(20).
+           05                      PIC X(1) VALUE ':'.
+           05                      PIC X(39).
+           05 TOT-F                PIC Z(5)9,99.
+       77 LIGNE                    PIC X(80) VALUE ALL '-'.
        01 HALF-LIGNE.
-           05 PIC X(10).
-           05 PIC X(10) VALUE '----------'.    
+           05                      PIC X(10).
+           05                      PIC X(10) VALUE '----------'.    
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
        PROCEDURE DIVISION.
+           PERFORM 10000-INIT
+           PERFORM 20000-TRAITEMENT
+           PERFORM 30000-FIN
+           STOP RUN.
+
+       10000-INIT.
            OPEN INPUT F-ASSURES
-           PERFORM CONSTRUCT-HEADER
+           PERFORM 11000-CONSTRUCT-HEADER
+           .
+       20000-TRAITEMENT.
            PERFORM UNTIL EOF = EOF-TRUE
              READ F-ASSURES INTO W-ASSURES
                AT END
                  MOVE EOF-TRUE TO EOF
                NOT AT END
-                 PERFORM ASSURES-L 
+                 PERFORM 21000-ASSURES-L 
              END-READ
            END-PERFORM
+           .
+       30000-FIN.
            CLOSE F-ASSURES
-           PERFORM DISPLAY-TOT-TYPE
+           PERFORM 21210-DISPLAY-TOT-TYPE
            ADD TOT-TYPE TO TOT-DEPT
            ADD TOT-DEPT TO TOT-GEN
-           PERFORM DISPLAY-TOT-DEPT
-           PERFORM DISPLAY-TOT-GEN
-           STOP RUN.
-       CONSTRUCT-HEADER.
+           PERFORM 21110-DISPLAY-TOT-DEPT
+           PERFORM 31000-DISPLAY-TOT-GEN
+           .
+       11000-CONSTRUCT-HEADER.
            DISPLAY HEADER-FORMAT
            DISPLAY SPACE
            DISPLAY LIGNE
            DISPLAY SPACE
            .
-       ASSURES-L.
+       21000-ASSURES-L.
       *    Si on ne change pas de departement ni de type de vehicule
            IF DEPT-TEMP = DEPARTEMENT AND TYPE-TEMP = TYPE-VEHICULE
-             PERFORM DISPLAY-MONTANT
-             PERFORM ADD-MONTANT
+             PERFORM 21500-DISPLAY-MONTANT
+             PERFORM 21600-ADD-MONTANT
            END-IF
       *    Si on ne change pas de departement 
       *    mais on change de type de vehicule     
            IF DEPT-TEMP = DEPARTEMENT AND TYPE-TEMP NOT = TYPE-VEHICULE
-             PERFORM CHANGE-TYPE
+             PERFORM 21200-CHANGE-TYPE
            END-IF
       *    Si c'est la 1ère boucle
            IF TYPE-TEMP = '1' AND DEPT-TEMP = 00
-             PERFORM DISPLAY-DEPT
-             PERFORM DISPLAY-TYPE
+             PERFORM 21300-DISPLAY-DEPT
+             PERFORM 21400-DISPLAY-TYPE
              DISPLAY MONTANT-HEADER-FORMAT
-             PERFORM DISPLAY-MONTANT
-             PERFORM ADD-MONTANT
+             PERFORM 21500-DISPLAY-MONTANT
+             PERFORM 21600-ADD-MONTANT
              MOVE DEPARTEMENT TO DEPT-TEMP
              MOVE TYPE-VEHICULE TO TYPE-TEMP
            END-IF
       *    Si on change de departement     
            IF DEPT-TEMP NOT = DEPARTEMENT
-             PERFORM CHANGE-DEPT
+             PERFORM 21100-CHANGE-DEPT
            END-IF             
            .
-       DISPLAY-DEPT.
+       21300-DISPLAY-DEPT.
            MOVE DEPARTEMENT TO DEPT-F
            DISPLAY DEPT-FORMAT
            .
-       DISPLAY-TYPE.
+       21400-DISPLAY-TYPE.
            MOVE TYPE-VEHICULE TO TYPE-F
            DISPLAY TYPE-FORMAT
            .
-       DISPLAY-MONTANT.
+       21500-DISPLAY-MONTANT.
            MOVE NOM-PRENOM TO NOM-PRENOM-F
            MOVE PRIME-DE-BASE TO MONTANT-F
            DISPLAY MONTANT-FORMAT
            .
-       DISPLAY-TOT-GEN.
+       31000-DISPLAY-TOT-GEN.
            MOVE 'TOTAL GENERAL' TO TOT-N
            MOVE TOT-GEN TO TOT-F
            DISPLAY TOT-FORMAT
            .
-       DISPLAY-TOT-DEPT.
+       21110-DISPLAY-TOT-DEPT.
            MOVE 'TOTAL DEPARTEMENT' TO TOT-N
            MOVE TOT-DEPT TO TOT-F
            DISPLAY TOT-FORMAT
            DISPLAY HALF-LIGNE
            .
-       DISPLAY-TOT-TYPE.
+       21210-DISPLAY-TOT-TYPE.
            MOVE 'TOTAL DU TYPE' TO TOT-N
            MOVE TOT-TYPE TO TOT-F
            DISPLAY TOT-FORMAT
            DISPLAY HALF-LIGNE
            .
-       CHANGE-DEPT.
+       21100-CHANGE-DEPT.
            ADD TOT-TYPE TO TOT-DEPT
            ADD TOT-DEPT TO TOT-GEN
-           PERFORM DISPLAY-TOT-TYPE
+           PERFORM 21210-DISPLAY-TOT-TYPE
            INITIALIZE TOT-TYPE
-           PERFORM DISPLAY-TOT-DEPT
+           PERFORM 21110-DISPLAY-TOT-DEPT
            INITIALIZE TOT-DEPT
            DISPLAY SPACE
-           PERFORM DISPLAY-DEPT
+           PERFORM 21300-DISPLAY-DEPT
            MOVE DEPARTEMENT TO DEPT-TEMP
-           PERFORM DISPLAY-TYPE
+           PERFORM 21400-DISPLAY-TYPE
            MOVE TYPE-VEHICULE TO TYPE-TEMP
            DISPLAY MONTANT-HEADER-FORMAT
-           PERFORM DISPLAY-MONTANT
-           PERFORM ADD-MONTANT
+           PERFORM 21500-DISPLAY-MONTANT
+           PERFORM 21600-ADD-MONTANT
            .
-       CHANGE-TYPE.
+       21200-CHANGE-TYPE.
            ADD TOT-TYPE TO TOT-DEPT
-           PERFORM DISPLAY-TOT-TYPE
+           PERFORM 21210-DISPLAY-TOT-TYPE
            INITIALIZE TOT-TYPE
-           PERFORM DISPLAY-TYPE
+           PERFORM 21400-DISPLAY-TYPE
            MOVE TYPE-VEHICULE TO TYPE-TEMP
            DISPLAY MONTANT-HEADER-FORMAT
-           PERFORM DISPLAY-MONTANT
-           PERFORM ADD-MONTANT
+           PERFORM 21500-DISPLAY-MONTANT
+           PERFORM 21600-ADD-MONTANT
            .
-       ADD-MONTANT.
+       21600-ADD-MONTANT.
            ADD PRIME-DE-BASE TO TOT-TYPE
            .
