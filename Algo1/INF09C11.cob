@@ -12,7 +12,7 @@
            select f-stats assign ddstats.
       *********************************
       *    D A T A   D I V I S I O N
-      ****************
+      *********************************
        DATA DIVISION.
        FILE SECTION.
        fd F-STOCK

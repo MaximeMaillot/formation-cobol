@@ -12,7 +12,7 @@
            SELECT f-stats assign ddstatsf.
       *********************************
       *    D A T A   D I V I S I O N
-      ****************
+      *********************************
        DATA DIVISION.
        FILE SECTION.
        fd f-client1
