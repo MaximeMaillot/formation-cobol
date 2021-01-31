@@ -16,29 +16,26 @@
        fd F-MVTMAJ
            BLOCK CONTAINS 0
            DATA RECORD IS E-MVTMAJ.
-       01 E-MVTMAJ             PIC X(80).
-      ****************************************************************
-      *    W O R K I N G - S T O R A G E   S E C T I O N
-      ****************************************************************
-       WORKING-STORAGE SECTION.
-       01 CR-MVTMAJ            PIC 99.
-      *-------------- MOUVEMENT  ---------------------
-       01 W-MOUVEMENT.
+       01 E-MVTMAJ.
          05 MATRICULE          PIC 9(6).
          05 CODE-MOUVEMENT     PIC 9(1).
          05 CODE-N             PIC X(73).
          05 CODE-1 REDEFINES CODE-N.
            10 SIGNE            PIC X(1).
            10 TAUX             PIC 9(2).
+           10 PIC X(70).
          05 CODE-2 REDEFINES CODE-N.
            10 NOM-PRENOM       PIC X(20).
+           10 PIC X(53).
          05 CODE-3 REDEFINES CODE-N.
            10 ADRESSE          PIC X(18).
            10 CODE-POSTAL      PIC 9(5).
            10 VILLE            PIC X(12).
+           10 PIC X(38).
          05 CODE-4 REDEFINES CODE-N.
            10 TYPE-P           PIC X(1).
            10 PRIME            PIC 9(4)V9(2).
+           10 PIC X(66).
          05 CODE-5 REDEFINES CODE-N.
            10 NOM              PIC A(12).
            10 PRENOM           PIC A(10).
@@ -50,10 +47,15 @@
              11                PIC 9(8).
            10 SALAIRE          PIC S9(4)V9(2) COMP-3.
            10 QUALIFICATION    PIC X(19).
-           10 DATE-EMBAUCHE    PIC 9(8).
+           10 DATE-EMBAUCHE.
              11 DAY-E          PIC 99.
              11 MONTH-E        PIC 99.
-             11 YEAR-E         PIC 9999. 
+             11 YEAR-E         PIC 9999.
+      ****************************************************************
+      *    W O R K I N G - S T O R A G E   S E C T I O N
+      ****************************************************************
+       WORKING-STORAGE SECTION.
+       01 CR-MVTMAJ            PIC 99. 
       * ------------------------------------------------------
       * Variable d'edition d'un salaire     
        01 SALAIRE-EDIT         PIC z(6)9,99.
@@ -105,8 +107,6 @@
       * Variable de parcours d'un fichier 
        77 EOF-TRUE             PIC X VALUE "Y".
        77 EOF                  PIC X VALUE "F".
-
-
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
@@ -123,7 +123,7 @@
       * Lit le fichier
        20000-TRAITEMENT.
            PERFORM UNTIL EOF = EOF-TRUE
-             READ F-MVTMAJ INTO W-MOUVEMENT
+             READ F-MVTMAJ
               AT END
                 MOVE EOF-TRUE TO EOF
               NOT AT END
@@ -151,19 +151,14 @@
        21100-EVALUATE-MVT.
            EVALUATE CODE-MOUVEMENT
              WHEN 1
-               MOVE CODE-N TO CODE-1
                PERFORM 21110-MVT-CODE-1
              WHEN 2
-               MOVE CODE-N TO CODE-2
                PERFORM 21120-MVT-CODE-2
              WHEN 3
-               MOVE CODE-N TO CODE-3
                PERFORM 21130-MVT-CODE-3
              WHEN 4
-               MOVE CODE-N TO CODE-4
                PERFORM 21140-MVT-CODE-4
              WHEN 5
-               MOVE CODE-N TO CODE-5
                PERFORM 21150-MVT-CODE-5
              WHEN OTHER
                MOVE "2 - Code mouvement inconnu" TO ERROR-M
