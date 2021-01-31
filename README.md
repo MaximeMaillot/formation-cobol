@@ -27,3 +27,5 @@ Ce fichier va servir à alimenter un fichier comptable, un fichier de dépasseme
 Créer un fichier CLIENT-F contenant la fusion des 2 fichiers en entrée et afficher les statistiques.
 ## Algo4
 On veut fournir en sortie un fichier récapitulatif contenant des codes 400 pour les agences, des codes 500 pour les régions et des codes 999 en cas d'erreur.
+## Algo5
+On désire effectuer des statistiques de la répartition géographique des habitants en France
