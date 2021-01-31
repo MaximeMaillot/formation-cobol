@@ -10,16 +10,13 @@
             DDASSUR FILE STATUS IS CR-ASSURES.
       *********************************
       *    D A T A   D I V I S I O N
-      ****************
+      *********************************
        DATA DIVISION.
        FILE SECTION.
        fd F-ASSURES
            BLOCK CONTAINS 0
            DATA RECORD IS E-ASSURES.
-       01  E-ASSURES              PIC X(80).
-       WORKING-STORAGE SECTION.
-       01  CR-ASSURES             PIC 99.
-       01  W-ASSURES.
+       01  E-ASSURES.
            05  MATRICULE          PIC 9(6).
            05  NOM-PRENOM         PIC X(20).
            05  ADRESSE.
@@ -31,7 +28,9 @@
                10  PRIME-DE-BASE  PIC 9(4)V9(2).
                10  BONUS-MALUS    PIC X(1).
                10  TAUX           PIC 9(2).
-       * Structure pour recuperer la date       
+       WORKING-STORAGE SECTION.
+       01  CR-ASSURES             PIC 99.
+      * Structure pour recuperer la date       
        01  FORMAT-DATE.
            05  DATE-N.
                10 YEAR-N          PIC 9(4).
@@ -87,7 +86,7 @@
            PERFORM INIT-VAR
            OPEN INPUT F-ASSURES
            PERFORM UNTIL EOF = EOF-TRUE
-             READ F-ASSURES INTO W-ASSURES
+             READ F-ASSURES
                 AT END
                     MOVE EOF-TRUE TO EOF
                 NOT AT END
@@ -129,8 +128,8 @@
            END-STRING
            DISPLAY FORMAT-IDENTITE
            .
-       QUITTANCE-F
-           * Calcul la quittance de prime
+       QUITTANCE-F.
+      * Calcul la quittance de prime
            MOVE "PRIME DE BASE" TO NOM-FACTURE
            MOVE PRIME-DE-BASE TO PRIX-FACTURE
            DISPLAY FORMAT-FACTURE
