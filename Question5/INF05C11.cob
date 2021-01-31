@@ -16,14 +16,7 @@
        fd F-MVT
            BLOCK CONTAINS 0
            DATA RECORD IS E-MVT.
-       01 E-MVT                PIC X(80).
-      ****************************************************************
-      *    W O R K I N G - S T O R A G E   S E C T I O N
-      ****************************************************************
-       WORKING-STORAGE SECTION.
-      *--------------DEFINITION DES VARIABLES---------------------
-       01 CR-MVT PIC 99.
-       01 W-MOUVEMENT.
+       01 E-MVT.
          05 MATRICULE        PIC 9(6).
          05 CODE-MOUVEMENT   PIC 9(1).
          05 CODE-N           PIC X(73).
@@ -39,6 +32,13 @@
          05 CODE-4 REDEFINES CODE-N.
            10 TYPE-P           PIC X(1).
            10 PRIME            PIC 9(4)V9(2).
+      ****************************************************************
+      *    W O R K I N G - S T O R A G E   S E C T I O N
+      ****************************************************************
+       WORKING-STORAGE SECTION.
+      *--------------DEFINITION DES VARIABLES---------------------
+       01 CR-MVT PIC 99.
+      * ---------- FORMAT ----------- 
        01 FORMAT-DATE.
          05  DATE-N.
            10 YEAR-N         PIC 9(4).
@@ -64,6 +64,12 @@
          05 TYPE-M           PIC X(7).
          05                  PIC X(2).
          05 ERROR-M          PIC X(50).
+       01 ERROR-CPT-F.
+         05 DESCRIPTION      PIC X(50).
+         05                  PIC X(3) VALUE ' : '.
+         05 CPT-ERROR-N      PIC 9(4).
+       77 WEEKDAY-NAME         PIC X(10).   
+      * -------- COMPTEURS ----------   
        01 CPT.
          05 CPT-MVT          PIC 9(4) VALUE 0.
          05 CPT-ERROR-TOT    PIC 9(4) VALUE 0.
@@ -73,12 +79,7 @@
          05 CPT-ERROR-4      PIC 9(4) VALUE 0.
          05 CPT-ERROR-MAT    PIC 9(4) VALUE 0.
          05 CPT-ERROR-CODE   PIC 9(4) VALUE 0.
-       01 ERROR-CPT-F.
-         05 DESCRIPTION      PIC X(50).
-         05                  PIC X(3) VALUE ' : '.
-         05 CPT-ERROR-N      PIC 9(4).
        77 HAS-ERROR            PIC 9 VALUE 0.
-       77 WEEKDAY-NAME         PIC X(10).
        77 EOF-TRUE             PIC X VALUE "Y".
        77 EOF                  PIC X VALUE "F".
 
@@ -90,7 +91,7 @@
            PERFORM CONSTRUCT-HEADER
            OPEN INPUT F-MVT
            PERFORM UNTIL EOF = EOF-TRUE
-             READ F-MVT INTO W-MOUVEMENT
+             READ F-MVT
                 AT END
                     MOVE EOF-TRUE TO EOF
                 NOT AT END
