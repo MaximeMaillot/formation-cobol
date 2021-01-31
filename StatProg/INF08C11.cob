@@ -43,7 +43,7 @@
        01 FORMAT-HEADER.
          05                        PIC X(10).
          05                        PIC X(70) 
-          VALUE 'Statistique sur les programmes'.
+           VALUE 'Statistique sur les programmes'.
        01 FORMAT-LIGNE.
          05                        PIC X(10).
          05                        PIC X(3) VALUE ' - '.
