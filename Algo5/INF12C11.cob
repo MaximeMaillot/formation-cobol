@@ -102,24 +102,24 @@
            open input f-pop
            open output f-stats
            perform READ-POP
-           perform POP-FIRST-READ
+           perform 11000-POP-FIRST-READ
            .
        20000-TRAITEMENT.
            PERFORM UNTIL EOF-POP = EOF-TRUE
              IF (TEMP-DEPARTEMENT = DEPARTEMENT of e-pop)
                IF (TEMP-CANTON = CANTON of e-pop)
-                 perform POP-NOCHANGE
+                 perform 21000-POP-NOCHANGE
                ELSE
-                 perform POP-CHANGE-CANTON
+                 perform 22000-POP-CHANGE-CANTON
                END-IF
              ELSE
-               perform POP-CHANGE-DEPT
+               perform 23000-POP-CHANGE-DEPT
              END-IF
            perform READ-POP
            END-PERFORM
            .
        30000-END-PGM.
-           perform POP-LAST-READ
+           perform 31000-POP-LAST-READ
            CLOSE f-pop
            close f-stats
            stop run
@@ -130,18 +130,18 @@
                MOVE EOF-TRUE TO EOF-POP
            END-READ
            .
-       POP-FIRST-READ.
+       11000-POP-FIRST-READ.
            perform WRITE-TITLE
            perform WRITE-DEPARTEMENT
            perform WRITE-CANTON
            MOVE CANTON of e-pop TO TEMP-CANTON
            MOVE DEPARTEMENT of e-pop TO TEMP-DEPARTEMENT
            .
-       POP-NOCHANGE.
+       21000-POP-NOCHANGE.
            ADD NB-HABITANT of e-pop TO TOTAL-CANTON of TOTAUX
            perform WRITE-COMMUNE
            .
-       POP-CHANGE-CANTON.
+       22000-POP-CHANGE-CANTON.
            ADD TOTAL-CANTON of TOTAUX TO TOTAL-DEPARTEMENT of TOTAUX
            perform WRITE-TOT-CANTON
            perform WRITE-CANTON
@@ -149,7 +149,7 @@
            MOVE CANTON of e-pop TO TEMP-CANTON
            initialize TOTAL-CANTON of TOTAUX
            .
-       POP-CHANGE-DEPT.
+       23000-POP-CHANGE-DEPT.
            ADD TOTAL-DEPARTEMENT of TOTAUX TO TOTAL-GENERAL of TOTAUX
            perform WRITE-TOT-CANTON
            perform WRITE-TOT-DEPT
@@ -161,7 +161,7 @@
            initialize TOTAL-CANTON of TOTAUX
            initialize TOTAL-DEPARTEMENT of TOTAUX
            .
-       POP-LAST-READ.
+       31000-POP-LAST-READ.
            ADD TOTAL-CANTON of TOTAUX TO TOTAL-DEPARTEMENT of TOTAUX
            ADD TOTAL-DEPARTEMENT of TOTAUX TO TOTAL-GENERAL of TOTAUX
            perform WRITE-TOT-CANTON
