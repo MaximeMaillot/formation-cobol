@@ -1,11 +1,11 @@
 # formation-cobol
 
-Les dossiers contienent :
+Les dossiers contiennent :
 
 - un Fichier FXXC11 qui contient le code COBOL qui sera compilé et executé.
 - un EXECXX qui contient le JCL permettant de compiler et d'executer le fichier FXXC11.
 
-## Question 1 
+## Question 1
 
 Ecrire un programme contenant la description du fichier ASSURES.
 
