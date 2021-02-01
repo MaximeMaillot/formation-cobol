@@ -11,7 +11,7 @@ Ecrire un programme contenant la description du fichier ASSURES.
 
 ## Question 2
 
-Ecrire un programme qui va lire le fichier ASSURES et lister son contenu
+Ecrire un programme qui va lire le fichier ASSURES et lister son contenu.
 
 ## Question 3
 
@@ -28,7 +28,7 @@ Ne faire que le contrôle de ce fichier en tenant compte du dessin et des contr�
 
 ## Question 6
 
-Maintenance du programme précédent en utilisant le fichier MVTMAJ
+Maintenance du programme précédent en utilisant le fichier MVTMAJ.
 
 ## Question 7
 
@@ -36,7 +36,7 @@ Sortir les statistiques sur le fichier des assurés par département et par code
 
 ## StatProg
 
-Développer un programme permettant de sortir des statistiques sur vos programme
+Développer un programme permettant de sortir des statistiques sur vos programme.
 
 ## Algo1
 
@@ -53,4 +53,8 @@ On veut fournir en sortie un fichier récapitulatif contenant des codes 400 pour
 
 ## Algo5
 
-On désire effectuer des statistiques de la répartition géographique des habitants en France
+On désire effectuer des statistiques de la répartition géographique des habitants en France.
+
+## Algo6
+
+L’objectif est de créer un fichier ADRESSE à partir d'un fichier CLIENT en gérant les anomalies.
