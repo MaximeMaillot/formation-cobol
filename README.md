@@ -62,3 +62,7 @@ L’objectif est de créer un fichier ADRESSE à partir d'un fichier CLIENT en g
 ## Algo7
 
 Retourne la moyenne de chaque étudiant ainsi que la moyenne général, la moyenne minimum et la moyenne maximum.
+
+## EvalDate
+
+Valider une date rentrée par un utilisateur.
