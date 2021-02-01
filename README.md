@@ -58,3 +58,7 @@ On désire effectuer des statistiques de la répartition géographique des habit
 ## Algo6
 
 L’objectif est de créer un fichier ADRESSE à partir d'un fichier CLIENT en gérant les anomalies.
+
+## Algo7
+
+Retourne la moyenne de chaque étudiant ainsi que la moyenne général, la moyenne minimum et la moyenne maximum.
