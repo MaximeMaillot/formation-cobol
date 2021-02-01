@@ -6,10 +6,14 @@
            DECIMAL-POINT IS COMMA.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT f-stock ASSIGN ddstock.
-           select f-compta assign ddcompta.
-           select f-depassement assign dddepass.
-           select f-stats assign ddstats.
+           SELECT f-stock ASSIGN ddstock
+            FILE STATUS is CR-STOCK.
+           select f-compta assign ddcompta
+            file status is CR-COMPTA.
+           select f-depassement assign dddepass
+            file status is CR-DEPASS.
+           select f-stats assign ddstats
+            file status is CR-STATS.
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
@@ -17,21 +21,31 @@
        FILE SECTION.
        fd F-STOCK
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode F
            DATA RECORD IS E-STOCK.
        01 E-STOCK.
          05 NUM-STOCK              PIC 9(6).
          05 NB-PRODUIT             PIC 9(4).
          05 PU-PRODUIT             PIC 9(4).
          05 NB-MIN                 PIC 9(4).
-         05                        PIC X(62).       
+         05                        PIC X(62). 
+             
        fd F-COMPTA.
        01 COMPTA                   PIC X(80).
+
        fd F-DEPASSEMENT.
        01 DEPASSEMENT              PIC X(80).
+
        fd F-STATS.
        01 STATS                    PIC X(80).
 
        WORKING-STORAGE SECTION.
+       01 CR-STOCK PIC 99.
+       01 CR-COMPTA PIC 99.
+       01 CR-DEPASS PIC 99.
+       01 CR-STATS PIC 99.
+
       * ------------- Compteurs ----------- 
        01 CPT.
          05 CPT-STOCK              PIC 9(4) VALUE 0.
@@ -43,6 +57,7 @@
          05 NUM-STOCK-F            PIC 9(6).
          05                        PIC X(10).
          05 PRIX-TOT-F             PIC Z(5)9.
+       
        01 FORMAT-STATS.
          05                        PIC X(43) VALUE 
            'Nombre d’enregistrement lus dans fichier '.
@@ -130,7 +145,7 @@
            MOVE 'ANOMALIE' TO FICHIER-N
            MOVE CPT-ANOMALIE TO CPT-F
            PERFORM 31100-WRITE-STATS
-      *     
+           
            CLOSE F-STATS
            .
       * Ecrit dans stats     

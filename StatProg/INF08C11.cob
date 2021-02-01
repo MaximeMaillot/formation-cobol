@@ -16,20 +16,22 @@
        FILE SECTION.
        fd F-CODE
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode f
            DATA RECORD IS E-CODE.
-       01 E-CODE                   PIC X(80).
-
-       WORKING-STORAGE SECTION.
-       01 CR-CODE                  PIC 99.
-      * Variable de gestion de fichier 
-       77 EOF-TRUE                 PIC X VALUE "Y".
-       77 EOF                      PIC X VALUE "F".
-      * -------- Structure ASSURES -----
-       01 W-CODE.
+       01 E-CODE.
          05                        PIC X(6).
          05 SPECIAL-CHAR           PIC X(1).
          05 ZONE-A                 PIC X(4).
          05 ZONE-B                 PIC X(69).
+
+       WORKING-STORAGE SECTION.
+       01 CR-CODE                  PIC 99.
+
+      * Variable de gestion de fichier 
+       77 EOF-TRUE                 PIC X VALUE "Y".
+       77 EOF                      PIC X VALUE "F".
+
       * ----------- Compteurs  ---------------
        01 CPT.
          05 CPT-LIGNE-PROG         PIC 9(4) VALUE 0.
@@ -74,7 +76,7 @@
       * Parcours le fichier
        20000-TRAITEMENT.
            PERFORM UNTIL EOF = EOF-TRUE
-             READ F-CODE INTO W-CODE
+             READ F-CODE
                AT END
                  MOVE EOF-TRUE TO EOF
                NOT AT END
@@ -91,7 +93,7 @@
       * Compte les lignes ainsi que les lignes commentes et vide
        21000-COUNT-LIGNE.
            ADD 1 TO CPT-LIGNE-PROG
-           IF W-CODE = SPACE
+           IF E-CODE = SPACE
              ADD 1 TO CPT-LIGNE-VIDE
            END-IF
            IF SPECIAL-CHAR = '*'

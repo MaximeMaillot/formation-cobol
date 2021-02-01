@@ -15,6 +15,8 @@
        FILE SECTION.
        fd F-MVTMAJ
            BLOCK CONTAINS 0
+           recording mode f
+           record contains 80
            DATA RECORD IS E-MVTMAJ.
        01 E-MVTMAJ.
          05 MATRICULE          PIC 9(6).

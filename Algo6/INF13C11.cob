@@ -6,8 +6,10 @@
            DECIMAL-POINT IS COMMA.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT f-client ASSIGN dfalgo.
-           SELECT f-addr ASSIGN daddres.
+           SELECT f-client ASSIGN dfalgo
+            file status is CR-CLIENT.
+           SELECT f-addr ASSIGN daddres
+            file status is CR-ADDR.
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
@@ -15,6 +17,8 @@
        FILE SECTION.
        fd f-client
            BLOCK CONTAINS 0
+           recording mode F
+           record contains 80
            DATA RECORD IS e-client.
        01 e-client.
          05 TYPE-ENR PIC 9.
@@ -30,10 +34,13 @@
          05 CORPS-ENR-3 redefines CORPS-ENR.
            10 MONTANT PIC 9(4).
            10 PIC X(69).
+
        fd f-addr.
        01 ADRESSES PIC X(80).
 
        WORKING-STORAGE SECTION.
+       01 CR-CLIENT PIC 99.
+       01 CR-ADDR PIC 99.
 
        01 ADRESSES-FORMAT.
          05 NUM-ADRESSE PIC 9(3) VALUE 100.
@@ -62,7 +69,7 @@
        10000-INIT-PGM.
            open input f-client
            open output f-addr
-           perform READ-CLIENT
+           perform 11000-READ-CLIENT
            MOVE NUM-COMPTE to temp-num-compte
            .
        20000-TRAITEMENT.
@@ -92,10 +99,10 @@
                  perform 29000-SKIP-CLIENT
              end-evaluate
              IF EOF-CLIENT NOT = EOF-TRUE
-               perform READ-CLIENT
+               perform 11000-READ-CLIENT
              END-IF
              IF (NUM-COMPTE NOT = temp-num-compte AND prev-type = 2)
-               perform WRITE-ADDR
+               perform 24000-WRITE-ADDR
              END-IF
              MOVE NUM-COMPTE to temp-num-compte
            END-PERFORM
@@ -105,17 +112,11 @@
            close f-addr
            stop run
            .
-       READ-CLIENT.
+       11000-READ-CLIENT.
            READ f-client
              AT END
                MOVE EOF-TRUE TO EOF-client
            END-READ
-           .
-       WRITE-ADDR.
-           MOVE ADRESSES-FORMAT TO ADRESSES
-           WRITE ADRESSES
-           INITIALIZE TOTAL-FACTURE-A
-           INITIALIZE prev-type
            .
        21000-FORMAT-ADDR-1.
            MOVE NUM-COMPTE TO NUM-COMPTE-A
@@ -128,10 +129,16 @@
        23000-FORMAT-ADDR-3.
            ADD MONTANT TO TOTAL-FACTURE-A
            .
+       24000-WRITE-ADDR.
+           MOVE ADRESSES-FORMAT TO ADRESSES
+           WRITE ADRESSES
+           INITIALIZE TOTAL-FACTURE-A
+           INITIALIZE prev-type
+           .
        29000-SKIP-CLIENT.
            perform until num-compte NOT = temp-num-compte or
             EOF-CLIENT = EOF-TRUE
-            perform READ-CLIENT
+            perform 11000-READ-CLIENT
            end-perform
            INITIALIZE TOTAL-FACTURE-A
            INITIALIZE prev-type

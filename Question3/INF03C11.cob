@@ -15,6 +15,8 @@
        FILE SECTION.
        fd F-ASSURES
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode F
            DATA RECORD IS E-ASSURES.
        01 E-ASSURES.
          05 MATRICULE          PIC 9(6).
@@ -29,7 +31,9 @@
            10 BONUS-MALUS    PIC X(1).
            10 TAUX           PIC 9(2).
          05 PIC X(9).
+
        WORKING-STORAGE SECTION.
+
        01 CR-ASSURES             PIC 99.
 
        77 LIGNE PIC X(80) VALUE ALL '-'.
@@ -41,7 +45,6 @@
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
        PROCEDURE DIVISION.
-           MOVE "F" TO EOF
            OPEN INPUT F-ASSURES
            PERFORM UNTIL EOF = EOF-TRUE
              READ F-ASSURES

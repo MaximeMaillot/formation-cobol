@@ -16,15 +16,10 @@
        FILE SECTION.
        fd F-ASSURES
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode f
            DATA RECORD IS E-ASSURES.
-       01 E-ASSURES                PIC X(80).
-
-       WORKING-STORAGE SECTION.
-       01 CR-ASSURES               PIC 99.
-       77 EOF-TRUE                 PIC X VALUE "Y".
-       77 EOF                      PIC X VALUE "F".
-      * -------- Structure ASSURES ----- 
-       01 W-ASSURES.
+       01 E-ASSURES.
          05  MATRICULE             PIC 9(6).
          05  NOM-PRENOM            PIC X(20).
          05  ADRESSE.
@@ -38,6 +33,12 @@
            10  PRIME-DE-BASE       PIC 9(4)V9(2).
            10  BONUS-MALUS         PIC X(1).
            10  TAUX                PIC 9(2).
+         05 PIC X(9).
+
+       WORKING-STORAGE SECTION.
+       01 CR-ASSURES               PIC 99.
+       77 EOF-TRUE                 PIC X VALUE "Y".
+       77 EOF                      PIC X VALUE "F".
 
       * ------------ Totaux --------- 
        77 TOT-TYPE                 PIC 9(5)V9(2) VALUE 0.     
@@ -100,7 +101,7 @@
       * Parcours le fichier
        20000-TRAITEMENT.
            PERFORM UNTIL EOF = EOF-TRUE
-             READ F-ASSURES INTO W-ASSURES
+             READ F-ASSURES
                AT END
                  MOVE EOF-TRUE TO EOF
                NOT AT END

@@ -15,6 +15,8 @@
        FILE SECTION.
        fd F-ASSURES
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode F
            DATA RECORD IS E-ASSURES.
        01  E-ASSURES.
            05  MATRICULE          PIC 9(6).
@@ -28,6 +30,8 @@
                10  PRIME-DE-BASE  PIC 9(4)V9(2).
                10  BONUS-MALUS    PIC X(1).
                10  TAUX           PIC 9(2).
+           05 PIC X(14).
+           
        WORKING-STORAGE SECTION.
        01  CR-ASSURES             PIC 99.
       * Structure pour recuperer la date       

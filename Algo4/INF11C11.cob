@@ -6,10 +6,14 @@
            DECIMAL-POINT IS COMMA.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT f-region ASSIGN dregion.
-           SELECT f-mvt ASSIGN dmvt.
-           SELECT f-recap ASSIGN drecap.
-           SELECT f-stats assign dstatsr.
+           SELECT f-region ASSIGN dregion
+            file status is CR-REGION.
+           SELECT f-mvt ASSIGN dmvt
+            file status is CR-MVT.
+           SELECT f-recap ASSIGN drecap
+            file status is CR-RECAP.
+           SELECT f-stats assign dstatsr
+            file status is CR-STATS.
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
@@ -17,6 +21,8 @@
        FILE SECTION.
        fd f-region
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode F
            DATA RECORD IS e-region.
        01 e-region.
          05 MAT-REGION PIC 9(3).
@@ -27,6 +33,8 @@
 
        fd f-mvt
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode F
            DATA RECORD IS e-mvt.
        01 e-mvt.
          05 MAT-MVT PIC 9(3).
@@ -36,12 +44,19 @@
          05 CODE-VENDEUR PIC 9(2).
          05 NB-DOSSIER PIC 9(4).
          05 PIC X(65).
+
        fd f-recap.
        01 recap                    PIC X(80).
+       
        fd f-stats.
        01 stats                    PIC X(80).
 
        WORKING-STORAGE SECTION.
+       01 CR-REGION PIC 99.
+       01 CR-MVT PIC 99.
+       01 CR-RECAP PIC 99.
+       01 CR-STATS PIC 99.
+
       * --------------- Compteurs ----------- 
        01 CPT.
          05 CPT-CHECK.
@@ -98,24 +113,24 @@
            PERFORM 30000-END-PGM
            .
       * Lit le fichier et gere les erreurs
-       READ-REGION.
+       11000-READ-REGION.
            READ f-region
              AT END
                MOVE EOF-TRUE TO EOF-REGION
              NOT AT END
-               perform CHECK-ERROR-REGION
+               perform 11100-CHECK-ERROR-REGION
                ADD 1 TO CPT-MAT-REGION
                MOVE NUM-REGION of e-region 
                 TO PREV-NUM-REGION of PREV-REGION
            END-READ
            .
       * Lit le fichier mvt et gere les erreurs
-       READ-MVT.
+       12000-READ-MVT.
            READ f-mvt
              AT END
                MOVE EOF-TRUE TO EOF-MVT
              NOT AT END
-               perform CHECK-ERROR-MVT
+               perform 12100-CHECK-ERROR-MVT
                ADD 1 TO CPT-MAT-MVT
                MOVE NUM-REGION of e-mvt 
                 TO PREV-NUM-REGION of PREV-MVT
@@ -124,7 +139,7 @@
            END-READ
            .
       * Gestion d'erreur du fichier region
-       CHECK-ERROR-REGION.
+       11100-CHECK-ERROR-REGION.
       *    Erreur d'immatriculation
            IF (MAT-REGION NOT = CPT-MAT-REGION)
              perform 30000-END-PGM         
@@ -135,7 +150,7 @@
            END-IF
            .
       * Gestion d'erreur du fichier MVT
-       CHECK-ERROR-MVT.
+       12100-CHECK-ERROR-MVT.
       *    Erreur d'immatriculation
            IF (MAT-MVT NOT = CPT-MAT-MVT)
              perform 30000-END-PGM
@@ -156,8 +171,8 @@
            OPEN INPUT f-region
            OPEN INPUT f-mvt
            OPEN OUTPUT f-recap
-           PERFORM READ-REGION
-           PERFORM READ-MVT
+           PERFORM 11000-READ-REGION
+           PERFORM 12000-READ-MVT
            MOVE CODE-AGENCE of e-mvt TO CODE-AGENCE-TEMP
            .
       * Parcours les fichiers
@@ -175,7 +190,7 @@
                   (EOF-MVT = EOF-TRUE) OR
                   (CODE-AGENCE of e-mvt NOT = CODE-AGENCE-TEMP)
                    ADD NB-DOSSIER of e-mvt TO TOTAL-AGENCE
-                   perform READ-MVT
+                   perform 12000-READ-MVT
                  end-perform
                  perform 21000-WRITE-CODE-400
                  ADD TOTAL-AGENCE TO TOTAL-REGION
@@ -187,7 +202,7 @@
                INITIALIZE TOTAL-REGION
                INITIALIZE PREV-CODE-AGENCE
              END-IF
-             perform READ-REGION
+             perform 11000-READ-REGION
            end-perform
            .
        21000-WRITE-CODE-400.
@@ -195,7 +210,7 @@
            MOVE NUM-REGION of e-region TO NUM-REGION of FORMAT-RECAP
            MOVE CODE-AGENCE-TEMP TO CODE-AGENCE of CORPS-ENRGT-400
            MOVE TOTAL-AGENCE TO NB-DOSSIER of CORPS-ENRGT-400
-           perform WRITE-RECAP
+           perform 21100-WRITE-RECAP
            .
        22000-WRITE-CODE-500.
            MOVE '500' TO CODE-RECAP   
@@ -203,14 +218,14 @@
       *    Code agence gere par le INITALIZE
            MOVE NOM-REGION of e-region TO NOM-REGION of CORPS-ENRGT-500
            MOVE TOTAL-REGION TO NB-DOSSIER of CORPS-ENRGT-500
-           perform WRITE-RECAP
+           perform 21100-WRITE-RECAP
            .
        23000-WRITE-CODE-999.
            MOVE '999' TO CODE-RECAP
            MOVE NUM-REGION of e-region TO NUM-REGION of FORMAT-RECAP
-           perform WRITE-RECAP
+           perform 21100-WRITE-RECAP
            .
-       WRITE-RECAP.
+       21100-WRITE-RECAP.
            MOVE CPT-MAT-RECAP TO MAT-RECAP
            MOVE FORMAT-RECAP TO recap
            WRITE recap

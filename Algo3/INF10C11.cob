@@ -6,33 +6,50 @@
            DECIMAL-POINT IS COMMA.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT f-client1 ASSIGN dclient1.
-           SELECT f-client2 ASSIGN dclient2.
-           SELECT f-clientf ASSIGN dclientf.
-           SELECT f-stats assign ddstatsf.
+           SELECT f-client1 ASSIGN dclient1
+            file status is CR-CLIENT1.
+           SELECT f-client2 ASSIGN dclient2
+            file status is CR-CLIENT2.
+           SELECT f-clientf ASSIGN dclientf
+            file status is CR-CLIENTF.
+           SELECT f-stats assign ddstatsf
+            file status is CR-STATS.
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
        DATA DIVISION.
        FILE SECTION.
+
        fd f-client1
            BLOCK CONTAINS 0
+           record contains 50
+           recording mode F
            DATA RECORD IS e-client1.
        01 E-CLIENT1.
          05 CLIENT1-ID             PIC 9(6). 
          05                        PIC X(44).  
+       
        fd f-client2
            BLOCK CONTAINS 0
+           record contains 50
+           recording mode F
            DATA RECORD IS e-client2.
        01 E-CLIENT2.
          05 CLIENT2-ID             PIC 9(6). 
          05                        PIC X(44). 
+       
        fd f-clientf.
        01 CLIENTF                  PIC X(80).
+       
        fd f-stats.
        01 STATS                    PIC X(80).
 
        WORKING-STORAGE SECTION.
+       01 CR-CLIENT1 PIC 99.
+       01 CR-CLIENT2 PIC 99.
+       01 CR-CLIENTF PIC 99.
+       01 CR-STATS PIC 99.
+
       * --------------- Compteurs ----------- 
        01 CPT.
          05 CPT-CLIENT1            PIC 9(4) VALUE 0.
@@ -67,8 +84,8 @@
            OPEN INPUT F-CLIENT1
            OPEN INPUT F-CLIENT2
            OPEN OUTPUT F-CLIENTF
-           PERFORM READ-CLIENT1
-           PERFORM READ-CLIENT2
+           PERFORM 11000-READ-CLIENT1
+           PERFORM 12000-READ-CLIENT2
            .
       * Parcours les fichiers
        20000-TRAITEMENT. 
@@ -94,14 +111,14 @@
            end-perform
            .
       * Lit le fichier client1
-       READ-CLIENT1.
+       11000-READ-CLIENT1.
            READ F-CLIENT1
              AT END
                MOVE EOF-TRUE TO EOF-CLIENT1
            END-READ
            .
       * Lit le fichier client2
-       READ-CLIENT2.
+       12000-READ-CLIENT2.
            READ F-CLIENT2
              AT END
                MOVE EOF-TRUE TO EOF-CLIENT2
@@ -114,7 +131,7 @@
              WRITE CLIENTF
              ADD 1 TO CPT-CLIENT1
              MOVE CLIENT1-ID TO CLIENT-ID-TEMP
-             PERFORM READ-CLIENT1               
+             PERFORM 11000-READ-CLIENT1               
            .
       * Regarde si le dernier client ajoute est identique a client 1    
        21100-CHECK-CLIENT1-DOUBLON.
@@ -130,7 +147,7 @@
                WRITE CLIENTF
                ADD 1 TO CPT-CLIENT2
                MOVE CLIENT2-ID TO CLIENT-ID-TEMP
-               PERFORM READ-CLIENT2        
+               PERFORM 12000-READ-CLIENT2        
            .
       * Regarde si le dernier client ajoute est identique a client 2    
        22100-CHECK-CLIENT2-DOUBLON.

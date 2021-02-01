@@ -15,6 +15,8 @@
        FILE SECTION.
        fd F-MVT
            BLOCK CONTAINS 0
+           record contains 80
+           recording mode F
            DATA RECORD IS E-MVT.
        01 E-MVT.
          05 MATRICULE        PIC 9(6).
@@ -36,6 +38,7 @@
            10 TYPE-P           PIC X(1).
            10 PRIME            PIC 9(4)V9(2).
            10 PIC X(66).
+           
       ****************************************************************
       *    W O R K I N G - S T O R A G E   S E C T I O N
       ****************************************************************
