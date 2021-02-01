@@ -23,15 +23,19 @@
          05 CODE-1 REDEFINES CODE-N.
            10 SIGNE            PIC X(1).
            10 TAUX             PIC 9(2).
+           10 PIC X(70).
          05 CODE-2 REDEFINES CODE-N.
            10 NOM-PRENOM       PIC X(20).
+           10 PIC X(53).
          05 CODE-3 REDEFINES CODE-N.
            10 ADRESSE          PIC X(18).
            10 CODE-POSTAL      PIC 9(5).
            10 VILLE            PIC X(12).
+           10 PIC X(38).
          05 CODE-4 REDEFINES CODE-N.
            10 TYPE-P           PIC X(1).
            10 PRIME            PIC 9(4)V9(2).
+           10 PIC X(66).
       ****************************************************************
       *    W O R K I N G - S T O R A G E   S E C T I O N
       ****************************************************************
@@ -49,6 +53,16 @@
            10 MINUTE-N       PIC 9(2).
            10 SECOND-N       PIC 9(2).
          05 WEEKDAY-N        PIC 9.
+       01 WEEKDAY-DESC.
+         05 PIC X(10) VALUE 'LUNDI'.
+         05 PIC X(10) VALUE 'MARDI'.
+         05 PIC X(10) VALUE 'MERCREDI'.
+         05 PIC X(10) VALUE 'JEUDI'.
+         05 PIC X(10) VALUE 'VENDREDI'.
+         05 PIC X(10) VALUE 'SAMEDI'.
+         05 PIC X(10) VALUE 'DIMANCHE'.
+       01 WEEKDAY-TABLE redefines WEEKDAY-DESC.
+         05 W-NAME PIC X(10) occurs 7.
        01 HEADER-F.
          05 APIN             PIC X(38).
          05 WEEKDAY-F        PIC X(10).
@@ -68,7 +82,6 @@
          05 DESCRIPTION      PIC X(50).
          05                  PIC X(3) VALUE ' : '.
          05 CPT-ERROR-N      PIC 9(4).
-       77 WEEKDAY-NAME         PIC X(10).   
       * -------- COMPTEURS ----------   
        01 CPT.
          05 CPT-MVT          PIC 9(4) VALUE 0.
@@ -177,7 +190,7 @@
        CONSTRUCT-HEADER.
            PERFORM GET-DATE
            MOVE "API11" TO APIN
-           MOVE WEEKDAY-NAME TO WEEKDAY-F
+           MOVE W-NAME (WEEKDAY-N) TO WEEKDAY-F
            MOVE " le " TO SEPARATOR-F
            STRING
             DAY-N DELIMITED BY SIZE
@@ -189,10 +202,7 @@
            END-STRING
            DISPLAY HEADER-F
            DISPLAY SPACE
-           INITIALIZE APIN
-           INITIALIZE SEPARATOR-F
-           INITIALIZE WEEKDAY-F
-           INITIALIZE DATE-F
+           INITIALIZE HEADER-F
            STRING
             HOUR-N DELIMITED BY SIZE
             ":" DELIMITED BY SIZE
@@ -221,21 +231,6 @@
            ACCEPT DATE-N FROM DATE YYYYMMDD
            ACCEPT TIME-N FROM TIME
            ACCEPT WEEKDAY-N FROM DAY-OF-WEEK
-           EVALUATE WEEKDAY-N
-             WHEN 1
-               MOVE "LUNDI" TO WEEKDAY-NAME
-             WHEN 2
-               MOVE "MARDI" TO WEEKDAY-NAME
-             WHEN 3
-               MOVE "MERCREDI" TO WEEKDAY-NAME
-             WHEN 4
-               MOVE "JEUDI" TO WEEKDAY-NAME
-             WHEN 5
-               MOVE "VENDREDI" TO WEEKDAY-NAME
-             WHEN 6
-               MOVE "SAMEDI" TO WEEKDAY-NAME
-             WHEN 7
-               MOVE "DIMANCHE" TO WEEKDAY-NAME
            .
        DISPLAY-STATS.
            DISPLAY SPACE
