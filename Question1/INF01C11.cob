@@ -28,6 +28,7 @@
            10  PRIME-DE-BASE  PIC 9(4)V9(2).
            10  BONUS-MALUS    PIC X(1).
            10  TAUX           PIC 9(2).
+         05 PIC X(9).
        WORKING-STORAGE SECTION.
        01  CR-ASSURES             PIC 99.
        77  EOF-TRUE                PIC X VALUE "Y".
