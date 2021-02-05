@@ -8,10 +8,13 @@
        FILE-CONTROL.
            SELECT f-client1 ASSIGN dclient1
             file status is CR-CLIENT1.
+
            SELECT f-client2 ASSIGN dclient2
             file status is CR-CLIENT2.
+
            SELECT f-clientf ASSIGN dclientf
             file status is CR-CLIENTF.
+            
            SELECT f-stats assign ddstatsf
             file status is CR-STATS.
       *********************************

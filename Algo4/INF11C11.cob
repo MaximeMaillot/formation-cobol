@@ -8,10 +8,13 @@
        FILE-CONTROL.
            SELECT f-region ASSIGN dregion
             file status is CR-REGION.
+
            SELECT f-mvt ASSIGN dmvt
             file status is CR-MVT.
+
            SELECT f-recap ASSIGN drecap
             file status is CR-RECAP.
+            
            SELECT f-stats assign dstatsr
             file status is CR-STATS.
       *********************************
@@ -167,7 +170,7 @@
            end-if
            .
       * Ouvre les fichiers et effectue la première lecture
-       10000-INIT-PGM. 
+       10000-INIT-PGM.
            OPEN INPUT f-region
            OPEN INPUT f-mvt
            OPEN OUTPUT f-recap
@@ -176,17 +179,17 @@
            MOVE CODE-AGENCE of e-mvt TO CODE-AGENCE-TEMP
            .
       * Parcours les fichiers
-       20000-TRAITEMENT. 
-           perform until EOF-REGION = EOF-TRUE     
+       20000-TRAITEMENT.
+           perform until EOF-REGION = EOF-TRUE
              IF NUM-REGION of e-region NOT = NUM-REGION of e-mvt
                perform 23000-WRITE-CODE-999
              ELSE
       *        Tant que la region de f-mvt et de f-region est similaire           
-               perform until 
-                (EOF-MVT = EOF-TRUE) OR 
+               perform until
+                (EOF-MVT = EOF-TRUE) OR
                 (NUM-REGION of e-region NOT = NUM-REGION of e-mvt)
       *          Tant que le code d'agence ne change pas
-                 perform until 
+                 perform until
                   (EOF-MVT = EOF-TRUE) OR
                   (CODE-AGENCE of e-mvt NOT = CODE-AGENCE-TEMP)
                    ADD NB-DOSSIER of e-mvt TO TOTAL-AGENCE

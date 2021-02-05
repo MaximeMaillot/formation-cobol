@@ -47,7 +47,7 @@
            10 TEL-PORT.
              11 TEL-PORT-C     PIC 9(2).
              11                PIC 9(8).
-           10 SALAIRE          PIC S9(4)V9(2) COMP-3.
+           10 SALAIRE          PIC S9(5)V9(2) COMP-3.
            10 QUALIFICATION    PIC X(19).
            10 DATE-EMBAUCHE.
              11 DAY-E          PIC 99.
