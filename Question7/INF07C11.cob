@@ -150,16 +150,16 @@
       *    Si on change de departement     
            IF DEPT-TEMP NOT = DEPARTEMENT
              PERFORM 21100-CHANGE-DEPT
-           END-IF             
+           END-IF  
            .
       * Affiche le departement
        21300-DISPLAY-DEPT.
-           MOVE DEPARTEMENT TO DEPT-F
+           MOVE DEPT-TEMP TO DEPT-F
            DISPLAY DEPT-FORMAT
            .
       * Affiche le type du vehicule
        21400-DISPLAY-TYPE.
-           MOVE TYPE-VEHICULE TO TYPE-F
+           MOVE TYPE-TEMP TO TYPE-F
            DISPLAY TYPE-FORMAT
            .
       * Affiche le Nom-Prenom et la prime de base
