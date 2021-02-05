@@ -28,6 +28,8 @@
 
        WORKING-STORAGE SECTION.
        01 CR-ETUDIANT PIC 99.
+         88 OK-ETUDIANT value 0.
+         88 EOF-ETUDIANT value 10.
        
        01 FORMAT-MOYENNE PIC Z9,99.
 
@@ -65,7 +67,7 @@
            perform 11000-READ-ETUDIANT
            .
        20000-TRAITEMENT.
-           PERFORM UNTIL CR-ETUDIANT = 10
+           PERFORM UNTIL FF-ETUDIANT
              PERFORM VARYING I FROM 1 BY 1 UNTIL I > 10
                perform 21000-HANDLE-NOTE
              END-PERFORM
@@ -82,7 +84,7 @@
            .
        11000-READ-ETUDIANT.
            read f-etudiant
-           IF CR-ETUDIANT NOT = 10
+           IF OK-ETUDIANT
              ADD 1 TO CPT-ETUDIANT
            end-if
            .
