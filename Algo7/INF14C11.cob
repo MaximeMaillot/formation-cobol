@@ -67,7 +67,7 @@
            perform 11000-READ-ETUDIANT
            .
        20000-TRAITEMENT.
-           PERFORM UNTIL FF-ETUDIANT
+           PERFORM UNTIL EOF-ETUDIANT
              PERFORM VARYING I FROM 1 BY 1 UNTIL I > 10
                perform 21000-HANDLE-NOTE
              END-PERFORM
