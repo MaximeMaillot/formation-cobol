@@ -93,7 +93,9 @@
            PERFORM 10000-INIT
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-FIN
-           STOP RUN.
+           STOP RUN
+           .
+
       * Ouvre le fichier
        10000-INIT.
            OPEN INPUT F-ASSURES
@@ -101,13 +103,16 @@
            PERFORM 11000-CONSTRUCT-HEADER
            perform first-read
            .
+
       * Parcours le fichier
        20000-TRAITEMENT.
            perform 21000-ASSURES-L
            .
+
        READ-ASSURES.
            READ F-ASSURES
            .
+
       * Ferme le fichier et affiche les totaux
        30000-FIN.
            CLOSE F-ASSURES
@@ -117,6 +122,7 @@
            PERFORM 21110-DISPLAY-TOT-DEPT
            PERFORM 31000-DISPLAY-TOT-GEN
            .
+
       * Affiche des informations en haut de la page
        11000-CONSTRUCT-HEADER.
            DISPLAY HEADER-FORMAT
@@ -124,11 +130,13 @@
            DISPLAY LIGNE
            DISPLAY SPACE
            .
+
        NOCHANGE.
            PERFORM 21500-DISPLAY-MONTANT
            PERFORM 21600-ADD-MONTANT
            perform READ-ASSURES
            .
+
        first-read.
              PERFORM 21300-DISPLAY-DEPT
              PERFORM 21400-DISPLAY-TYPE
@@ -138,6 +146,7 @@
              MOVE DEPARTEMENT TO DEPT-TEMP
              MOVE TYPE-VEHICULE TO TYPE-TEMP
            .
+
       * Boucle principale
        21000-ASSURES-L.
       *    Si on ne change pas de departement ni de type de vehicule
@@ -153,28 +162,33 @@
              perform 21100-CHANGE-DEPT
            END-PERFORM
            .
+
       * Affiche le departement
        21300-DISPLAY-DEPT.
            MOVE DEPT-TEMP TO DEPT-F
            DISPLAY DEPT-FORMAT
            .
+
       * Affiche le type du vehicule
        21400-DISPLAY-TYPE.
            MOVE TYPE-TEMP TO TYPE-F
            DISPLAY TYPE-FORMAT
            .
+
       * Affiche le Nom-Prenom et la prime de base
        21500-DISPLAY-MONTANT.
            MOVE NOM-PRENOM TO NOM-PRENOM-F
            MOVE PRIME-DE-BASE TO MONTANT-F
            DISPLAY MONTANT-FORMAT
            .
+
       * Affiche le total general
        31000-DISPLAY-TOT-GEN.
            MOVE 'TOTAL GENERAL' TO TOT-N
            MOVE TOT-GEN TO TOT-F
            DISPLAY TOT-FORMAT
            .
+
       * Affiche le total du departement
        21110-DISPLAY-TOT-DEPT.
            MOVE 'TOTAL DEPARTEMENT' TO TOT-N
@@ -182,6 +196,7 @@
            DISPLAY TOT-FORMAT
            DISPLAY HALF-LIGNE
            .
+
       * Affiche le total du type de vehicule
        21210-DISPLAY-TOT-TYPE.
            MOVE 'TOTAL DU TYPE' TO TOT-N
@@ -189,6 +204,7 @@
            DISPLAY TOT-FORMAT
            DISPLAY HALF-LIGNE
            .
+
       * Gere le changement de departement
        21100-CHANGE-DEPT.
            ADD TOT-TYPE TO TOT-DEPT
@@ -206,6 +222,7 @@
            PERFORM 21500-DISPLAY-MONTANT
            PERFORM 21600-ADD-MONTANT
            .
+
       * Gere le changement du type de vehicule
        21200-CHANGE-TYPE.
            ADD TOT-TYPE TO TOT-DEPT
@@ -217,6 +234,7 @@
            PERFORM 21500-DISPLAY-MONTANT
            PERFORM 21600-ADD-MONTANT
            .
+
       * Ajoute la prime de base au total du type de vehicule
        21600-ADD-MONTANT.
            ADD PRIME-DE-BASE TO TOT-TYPE
