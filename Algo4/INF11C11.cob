@@ -30,7 +30,7 @@
        01 e-region.
          05 MAT-REGION PIC 9(3).
          05 CODE-REGION PIC X(2).
-         05 NUM-REGION PIC 9(2).
+         05 NUM-REGION-REGION PIC 9(2).
          05 NOM-REGION PIC X(20).
          05            PIC X(53).
 
@@ -42,7 +42,7 @@
        01 e-mvt.
          05 MAT-MVT PIC 9(3).
          05 CODE-MVT PIC X(2).
-         05 NUM-REGION PIC 9(2).
+         05 NUM-REGION-MVT PIC 9(2).
          05 CODE-AGENCE PIC 9(2).
          05 CODE-VENDEUR PIC 9(2).
          05 NB-DOSSIER PIC 9(4).
@@ -56,7 +56,9 @@
 
        WORKING-STORAGE SECTION.
        01 CR-REGION PIC 99.
+         88 EOF-REGION VALUE 10.
        01 CR-MVT PIC 99.
+         88 EOF-MVT VALUE 10.
        01 CR-RECAP PIC 99.
        01 CR-STATS PIC 99.
 
@@ -73,16 +75,16 @@
        01 FORMAT-RECAP.
          05 MAT-RECAP PIC 9(3).
          05 CODE-RECAP PIC 9(3).
-         05 NUM-REGION PIC 9(2).
+         05 NUM-REGION-RECAP PIC 9(2).
          05 CORPS-ENRGT PIC X(72).
          05 CORPS-ENRGT-400 redefines CORPS-ENRGT.
-           10 CODE-AGENCE PIC 9(2).
-           10 NB-DOSSIER PIC 9(5).
+           10 CODE-AGENCE-400 PIC 9(2).
+           10 NB-DOSSIER-400 PIC 9(5).
            10 PIC X(65).
          05 CORPS-ENRGT-500 redefines CORPS-ENRGT.
-           10 CODE-AGENCE PIC 9(2).
-           10 NOM-REGION PIC X(20).
-           10 NB-DOSSIER PIC 9(5).
+           10 CODE-AGENCE-500 PIC 9(2).
+           10 NOM-REGION-500 PIC X(20).
+           10 NB-DOSSIER-500 PIC 9(5).
            10 PIC X(45).
 
       * ---------- Variable de calcul -------------
@@ -93,19 +95,14 @@
       * -------- Stock le dernier parcours d'un fichier ------- 
        01 PREV.
          05 PREV-REGION.
-           10 PREV-NUM-REGION PIC 9(2).
+           10 PREV-NUM-REGION-REGION PIC 9(2).
          05 PREV-MVT.
-           10 PREV-NUM-REGION PIC 9(2).
+           10 PREV-NUM-REGION-MVT PIC 9(2).
            10 PREV-CODE-AGENCE PIC 9(2).
            10 PREV-CODE-VENDEUR PIC 9(2).
 
       * Variable permettant de boucler sur les agences 
        77 CODE-AGENCE-TEMP PIC 9(2).
-
-      * Variables de fin de fichier 
-       77 EOF-TRUE                 PIC X VALUE "Y".
-       77 EOF-REGION               PIC X VALUE "F".
-       77 EOF-MVT                  PIC X VALUE "F".
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
@@ -115,32 +112,29 @@
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-END-PGM
            .
+           
       * Lit le fichier et gere les erreurs
        11000-READ-REGION.
+           MOVE NUM-REGION-REGION TO PREV-NUM-REGION-REGION
            READ f-region
-             AT END
-               MOVE EOF-TRUE TO EOF-REGION
              NOT AT END
                perform 11100-CHECK-ERROR-REGION
                ADD 1 TO CPT-MAT-REGION
-               MOVE NUM-REGION of e-region 
-                TO PREV-NUM-REGION of PREV-REGION
            END-READ
            .
+
       * Lit le fichier mvt et gere les erreurs
        12000-READ-MVT.
+           MOVE NUM-REGION-MVT TO PREV-NUM-REGION-MVT
+           MOVE CODE-AGENCE TO PREV-CODE-AGENCE 
+           MOVE CODE-VENDEUR  TO PREV-CODE-VENDEUR
            READ f-mvt
-             AT END
-               MOVE EOF-TRUE TO EOF-MVT
              NOT AT END
                perform 12100-CHECK-ERROR-MVT
                ADD 1 TO CPT-MAT-MVT
-               MOVE NUM-REGION of e-mvt 
-                TO PREV-NUM-REGION of PREV-MVT
-               MOVE CODE-AGENCE of e-mvt TO PREV-CODE-AGENCE
-               MOVE CODE-VENDEUR of e-mvt TO PREV-CODE-VENDEUR
            END-READ
            .
+
       * Gestion d'erreur du fichier region
        11100-CHECK-ERROR-REGION.
       *    Erreur d'immatriculation
@@ -148,10 +142,11 @@
              perform 30000-END-PGM         
            END-IF
       *    Erreur de tri     
-           IF (PREV-NUM-REGION of PREV-REGION > NUM-REGION of e-region)
+           IF (PREV-NUM-REGION-REGION > NUM-REGION-REGION)
              perform 30000-END-PGM
            END-IF
            .
+
       * Gestion d'erreur du fichier MVT
        12100-CHECK-ERROR-MVT.
       *    Erreur d'immatriculation
@@ -159,16 +154,17 @@
              perform 30000-END-PGM
            END-IF
       *    Erreurs de tri
-           IF (PREV-NUM-REGION of PREV-MVT > NUM-REGION of e-mvt)
+           IF (PREV-NUM-REGION-MVT > NUM-REGION-MVT)
              perform 30000-END-PGM 
            end-if
-           IF (PREV-CODE-AGENCE > CODE-AGENCE of e-mvt)
+           IF (PREV-CODE-AGENCE > CODE-AGENCE)
              perform 30000-END-PGM 
            end-if
            IF (PREV-CODE-VENDEUR > CODE-VENDEUR)
-             perform 30000-END-PGM 
+             perform 30000-END-PGM
            end-if
            .
+
       * Ouvre les fichiers et effectue la première lecture
        10000-INIT-PGM.
            OPEN INPUT f-region
@@ -176,62 +172,70 @@
            OPEN OUTPUT f-recap
            PERFORM 11000-READ-REGION
            PERFORM 12000-READ-MVT
-           MOVE CODE-AGENCE of e-mvt TO CODE-AGENCE-TEMP
            .
+
       * Parcours les fichiers
        20000-TRAITEMENT.
-           perform until EOF-REGION = EOF-TRUE
-             IF NUM-REGION of e-region NOT = NUM-REGION of e-mvt
-               perform 23000-WRITE-CODE-999
-             ELSE
-      *        Tant que la region de f-mvt et de f-region est similaire           
-               perform until
-                (EOF-MVT = EOF-TRUE) OR
-                (NUM-REGION of e-region NOT = NUM-REGION of e-mvt)
-      *          Tant que le code d'agence ne change pas
-                 perform until
-                  (EOF-MVT = EOF-TRUE) OR
-                  (CODE-AGENCE of e-mvt NOT = CODE-AGENCE-TEMP)
-                   ADD NB-DOSSIER of e-mvt TO TOTAL-AGENCE
-                   perform 12000-READ-MVT
-                 end-perform
+           perform until EOF-MVT
+      *      Cas normal
+             IF NUM-REGION-MVT = NUM-REGION-REGION
+      *        Parcours une region         
+               perform until NUM-REGION-MVT NOT = NUM-REGION-REGION
+                 OR EOF-MVT
+                 MOVE CODE-AGENCE TO CODE-AGENCE-TEMP
+      *          Parcours les agences d'une region
+                 perform until CODE-AGENCE NOT = CODE-AGENCE-TEMP
+                   perform NO-CHANGE
+                 END-PERFORM
                  perform 21000-WRITE-CODE-400
-                 ADD TOTAL-AGENCE TO TOTAL-REGION
-                 MOVE CODE-AGENCE of e-mvt TO CODE-AGENCE-TEMP
-                 INITIALIZE TOTAL-AGENCE
-                 INITIALIZE PREV-CODE-VENDEUR
-               end-perform
+               END-PERFORM
                perform 22000-WRITE-CODE-500
-               INITIALIZE TOTAL-REGION
-               INITIALIZE PREV-CODE-AGENCE
+      *      Cas particuliers
+             ELSE
+               IF (NUM-REGION-MVT < NUM-REGION-REGION) OR EOF-REGION
+                 perform 23000-WRITE-CODE-999
+                 perform 12000-READ-MVT
+               ELSE
+                 perform 11000-READ-REGION
+               END-IF
              END-IF
-             perform 11000-READ-REGION
-           end-perform
+           END-PERFORM   
            .
+
+       NO-CHANGE.
+           ADD NB-DOSSIER TO TOTAL-AGENCE
+           perform 12000-READ-MVT
+           .
+
        21000-WRITE-CODE-400.
            MOVE '400' TO CODE-RECAP
-           MOVE NUM-REGION of e-region TO NUM-REGION of FORMAT-RECAP
-           MOVE CODE-AGENCE-TEMP TO CODE-AGENCE of CORPS-ENRGT-400
-           MOVE TOTAL-AGENCE TO NB-DOSSIER of CORPS-ENRGT-400
+           MOVE NUM-REGION-REGION TO NUM-REGION-RECAP
+           MOVE CODE-AGENCE-TEMP TO CODE-AGENCE-400
+           MOVE TOTAL-AGENCE TO NB-DOSSIER-400
            perform 21100-WRITE-RECAP
+           ADD TOTAL-AGENCE TO TOTAL-REGION
+           INITIALIZE TOTAL-AGENCE
            .
+
        22000-WRITE-CODE-500.
-           MOVE '500' TO CODE-RECAP   
-           MOVE NUM-REGION of e-region TO NUM-REGION of FORMAT-RECAP
-      *    Code agence gere par le INITALIZE
-           MOVE NOM-REGION of e-region TO NOM-REGION of CORPS-ENRGT-500
-           MOVE TOTAL-REGION TO NB-DOSSIER of CORPS-ENRGT-500
+           MOVE '500' TO CODE-RECAP
+           MOVE NUM-REGION-REGION TO NUM-REGION-RECAP
+           MOVE 0 TO CODE-AGENCE-500
+           MOVE NOM-REGION TO NOM-REGION-500
+           MOVE TOTAL-REGION TO NB-DOSSIER-500
            perform 21100-WRITE-RECAP
+           INITIALIZE TOTAL-REGION
            .
+
        23000-WRITE-CODE-999.
            MOVE '999' TO CODE-RECAP
-           MOVE NUM-REGION of e-region TO NUM-REGION of FORMAT-RECAP
+           MOVE NUM-REGION-MVT TO NUM-REGION-RECAP
            perform 21100-WRITE-RECAP
            .
+
        21100-WRITE-RECAP.
            MOVE CPT-MAT-RECAP TO MAT-RECAP
-           MOVE FORMAT-RECAP TO recap
-           WRITE recap
+           WRITE recap from FORMAT-RECAP
            INITIALIZE FORMAT-RECAP
            ADD 1 TO CPT-MAT-RECAP
            .
@@ -244,6 +248,7 @@
            CLOSE f-recap
            STOP RUN
            .
+
       * Gere le fichier stats
        31000-STATS.
            OPEN OUTPUT F-STATS
