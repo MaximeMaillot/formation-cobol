@@ -37,6 +37,7 @@
 
        WORKING-STORAGE SECTION.
        01 CR-ASSURES               PIC 99.
+         88 EOF-ASSURES VALUE 10.
        77 EOF-TRUE                 PIC X VALUE "Y".
        77 EOF                      PIC X VALUE "F".
 
@@ -96,18 +97,16 @@
       * Ouvre le fichier
        10000-INIT.
            OPEN INPUT F-ASSURES
+           perform READ-ASSURES
            PERFORM 11000-CONSTRUCT-HEADER
+           perform first-read
            .
       * Parcours le fichier
        20000-TRAITEMENT.
-           PERFORM UNTIL EOF = EOF-TRUE
-             READ F-ASSURES
-               AT END
-                 MOVE EOF-TRUE TO EOF
-               NOT AT END
-                 PERFORM 21000-ASSURES-L 
-             END-READ
-           END-PERFORM
+           perform 21000-ASSURES-L
+           .
+       READ-ASSURES.
+           READ F-ASSURES
            .
       * Ferme le fichier et affiche les totaux
        30000-FIN.
@@ -125,20 +124,12 @@
            DISPLAY LIGNE
            DISPLAY SPACE
            .
-      * Boucle principale
-       21000-ASSURES-L.
-      *    Si on ne change pas de departement ni de type de vehicule
-           IF DEPT-TEMP = DEPARTEMENT AND TYPE-TEMP = TYPE-VEHICULE
-             PERFORM 21500-DISPLAY-MONTANT
-             PERFORM 21600-ADD-MONTANT
-           END-IF
-      *    Si on ne change pas de departement 
-      *    mais on change de type de vehicule     
-           IF DEPT-TEMP = DEPARTEMENT AND TYPE-TEMP NOT = TYPE-VEHICULE
-             PERFORM 21200-CHANGE-TYPE
-           END-IF
-      *    Si c'est la 1ère boucle
-           IF TYPE-TEMP = '1' AND DEPT-TEMP = 00
+       NOCHANGE.
+           PERFORM 21500-DISPLAY-MONTANT
+           PERFORM 21600-ADD-MONTANT
+           perform READ-ASSURES
+           .
+       first-read.
              PERFORM 21300-DISPLAY-DEPT
              PERFORM 21400-DISPLAY-TYPE
              DISPLAY MONTANT-HEADER-FORMAT
@@ -146,11 +137,21 @@
              PERFORM 21600-ADD-MONTANT
              MOVE DEPARTEMENT TO DEPT-TEMP
              MOVE TYPE-VEHICULE TO TYPE-TEMP
-           END-IF
-      *    Si on change de departement     
-           IF DEPT-TEMP NOT = DEPARTEMENT
-             PERFORM 21100-CHANGE-DEPT
-           END-IF  
+           .
+      * Boucle principale
+       21000-ASSURES-L.
+      *    Si on ne change pas de departement ni de type de vehicule
+           perform until EOF-ASSURES
+             perform until dept-temp not = DEPARTEMENT
+              OR EOF-ASSURES
+               perform until type-temp not = TYPE-VEHICULE
+                OR EOF-ASSURES 
+                 perform NOCHANGE
+               end-perform
+               PERFORM 21200-CHANGE-TYPE
+             END-PERFORM 
+             perform 21100-CHANGE-DEPT
+           END-PERFORM
            .
       * Affiche le departement
        21300-DISPLAY-DEPT.
