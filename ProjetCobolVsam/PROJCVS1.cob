@@ -393,6 +393,7 @@
        22300-CHECK-DELETE-MVT.
            IF (MAT-A3 = MAT-MVT)
              perform 22310-DELETE-ASSURES-OUT
+             perform 18000-READ-ASSURES-IN
            ELSE
              MOVE 4 TO ERR-CODE
              perform 22700-CALL-ANO-PGM-ANO
@@ -402,7 +403,7 @@
 
        21000-WRITE-ASSURES-NO-MVT.
            write assures-out from e-assures-in
-           
+                      
            ADD 1 TO CPT-ASSURES-OUT
            .
        
