@@ -28,6 +28,12 @@
            SELECT f-etatano ASSIGN ETATANO
             FILE STATUS IS CR-ETATANO.
 
+           SELECT f-error ASSIGN ERRVS
+            ORGANIZATION IS INDEXED
+            ACCESS MODE IS RANDOM
+            RECORD KEY IS error-key-x
+            FILE STATUS IS CR-ERRVS.
+
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
@@ -52,6 +58,15 @@
        fd f-etatano.
        01 etatano.
            COPY CANO.
+
+       fd f-error is external
+           DATA RECORD IS e-error.
+       01 e-error.
+           02 error-key-9          pic 9(3).
+           02 error-key-x 
+            REDEFINES error-key-9  PIC x(3).
+           02 err-message          pic x(60).
+           02                      PIC X(17).
        
 
        WORKING-STORAGE SECTION.
@@ -190,11 +205,6 @@
 
       * -------------------------------------------------
 
-       01 FLAG.
-         05 FLAG-OPEN PIC 9 value 1.
-         05 FLAG-CONTINUE PIC 9 value 5.
-         05 FLAG-CLOSE PIC 9 value 9.
-
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
@@ -205,15 +215,11 @@
            .
 
        10000-INIT-PGM.
-           OPEN INPUT f-assures-in f-mvt 
+           OPEN INPUT f-assures-in f-mvt f-error
            OPEN OUTPUT f-assures-out f-etatano
            perform 11000-CHECK-INIT-FILE
            perform 18000-READ-ASSURES-IN
            perform 19000-READ-MVT
-           CALL ano-pgm USING
-                BY value 0
-                BY CONTENT FLAG-OPEN
-                BY content space
 
            perform get-current-date
            perform write-ano-header
@@ -237,6 +243,9 @@
            END-IF 
            IF CR-ETATANO > 0
              DISPLAY 'ERROR ETATANO : ' CR-ETATANO 
+           END-IF
+           IF CR-ERRVS > 0
+             DISPLAY 'ERROR ETATANO : ' CR-ERRVS 
            END-IF
            .
        
@@ -298,7 +307,6 @@
        22700-CALL-ANO-PGM-ANO.
            CALL ano-pgm USING
                 BY REFERENCE ERR-CODE
-                BY CONTENT FLAG-CONTINUE
                 BY REFERENCE LIB-MESS
                 
            perform 22710-WRITE-ETAT-ANO
@@ -309,7 +317,6 @@
        31700-CALL-ANO-PGM-STATS.
            CALL ano-pgm USING
                 BY REFERENCE I
-                BY CONTENT FLAG-CONTINUE
                 BY REFERENCE message-erreur
            .
        
@@ -438,10 +445,6 @@
            close f-assures-in f-assures-out f-mvt f-etatano
            perform 31000-DISPLAY-STATS
 
-           CALL ano-pgm USING
-                BY VALUE 0
-                BY CONTENT FLAG-CLOSE
-                BY VALUE space
            STOP RUN
            .
 
