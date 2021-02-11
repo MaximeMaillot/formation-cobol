@@ -198,6 +198,7 @@
       * P R O C E D U R E   D I V I S I O N
       ****************************************************************
        PROCEDURE DIVISION.
+       00000-DEBUT.
            PERFORM 10000-INIT-PGM
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-END-PGM
@@ -210,37 +211,40 @@
            perform 11000-CHECK-INIT-FILE
            perform 19000-READ-MVT
 
-           perform get-current-date
-           perform write-ano-header
+           perform 12000-get-current-date
+           perform 13000-write-ano-header
            .
 
        11000-CHECK-INIT-FILE.
            IF CR-MVT  > 0
              DISPLAY 'ERROR MVT : ' CR-MVT 
-             perform 30000-END-PGM
+             perform 11100-ABORT-PGM 
            END-IF
            IF CR-ERRVS > 0
              DISPLAY 'ERROR ERRVS : ' CR-ERRVS
-             perform 30000-END-PGM
+             perform 11100-ABORT-PGM
            END-IF
            IF CR-ASSURES4  > 0
-             DISPLAY 'ERROR ASSUR4 : ' CR-ASSURES4 
+             DISPLAY 'ERROR ASSUR4 : ' CR-ASSURES4
+             perform 11100-ABORT-PGM 
            END-IF 
            IF CR-ETATANO > 0
-             DISPLAY 'ERROR ETATANO : ' CR-ETATANO 
+             DISPLAY 'ERROR ETATANO : ' CR-ETATANO
+             perform 11100-ABORT-PGM 
            END-IF
            IF CR-ERRVS > 0
-             DISPLAY 'ERROR ETATANO : ' CR-ERRVS 
+             DISPLAY 'ERROR ETATANO : ' CR-ERRVS
+             perform 11100-ABORT-PGM 
            END-IF
            .
        
-       GET-CURRENT-DATE.
+       12000-GET-CURRENT-DATE.
            ACCEPT DATE-F FROM DATE YYYYMMDD
            ACCEPT TIME-F FROM TIME
            ACCEPT WEEKDAY-F FROM DAY-OF-WEEK
            .
 
-       write-ano-header.
+       13000-write-ano-header.
            MOVE CORRESPONDING DATE-F TO FORMAT-MAJ-ANO
 
            WRITE etatano from FORMAT-HEADER-TITLE-ANO
@@ -251,7 +255,7 @@
            WRITE etatano from FORMAT-LIGNE-TAB-ANO
            .
        
-       write-ano-footer.
+       32000-write-ano-footer.
            write etatano from FORMAT-LIGNE-TAB-ANO
            .
 
@@ -386,9 +390,11 @@
            .
 
        30000-END-PGM.
-           perform write-ano-footer
-           close f-ASSURES4 f-assures4 f-mvt f-etatano
+           close f-assures4 f-mvt
+           perform 32000-write-ano-footer
+           close f-etatano
            perform 31000-DISPLAY-STATS
+           close f-error
 
            STOP RUN
            .
@@ -426,4 +432,10 @@
        31200-DISPLAY-STATS-FOOTER.
            DISPLAY FORMAT-EMPTY-LIGNE-STATS
            DISPLAY FORMAT-LIGNE-TABLE-STATS
+           .
+       
+       11100-ABORT-PGM.
+           close f-assures4 f-mvt f-etatano f-error
+
+           STOP RUN
            .
