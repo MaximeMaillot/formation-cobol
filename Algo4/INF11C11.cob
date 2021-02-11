@@ -112,7 +112,7 @@
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-END-PGM
            .
-           
+
       * Lit le fichier et gere les erreurs
        11000-READ-REGION.
            MOVE NUM-REGION-REGION TO PREV-NUM-REGION-REGION
@@ -179,7 +179,7 @@
            perform until EOF-MVT
       *      Cas normal
              IF NUM-REGION-MVT = NUM-REGION-REGION
-      *        Parcours une region         
+      *        Parcours une region
                perform until NUM-REGION-MVT NOT = NUM-REGION-REGION
                  OR EOF-MVT
                  MOVE CODE-AGENCE TO CODE-AGENCE-TEMP
@@ -199,7 +199,7 @@
                  perform 11000-READ-REGION
                END-IF
              END-IF
-           END-PERFORM   
+           END-PERFORM
            .
 
        NO-CHANGE.
