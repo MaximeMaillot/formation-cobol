@@ -67,13 +67,7 @@
     DELETE API11.COBOL.ASSURES4
     DEFINE CLUSTER ( -
         NAME(API11.COBOL.ASSURES4) -
-        CISZ(4096) -
-        TRK(1,1) -
-        FSPC(10 20) -
-        IXD -
-        RECSZ(80 80) -
-        KEYS(6 0) -
-        VOLUMES(APIWK1))
+        API11.COBOL.ASSURES3))
 /*
 //*
 //CANO EXEC PGM=IEFBR14

@@ -17,7 +17,7 @@
       *********************************
        DATA DIVISION.
        FILE SECTION.
-       fd f-error
+       fd f-error is external
            DATA RECORD IS e-error.
        01 e-error.
            02 error-key-9          pic 9(3).
@@ -33,34 +33,12 @@
 
        LINKAGE SECTION.
        01 L-ERROR-CODE             PIC 9(3).
-       01 flag                     PIC 9.
        01 err-label                PIC x(60).
 
        PROCEDURE DIVISION 
-           USING L-ERROR-CODE FLAG err-label.
-           EVALUATE FLAG
-            WHEN 1
-              PERFORM 10000-INIT-PGM
-            WHEN 5
-              PERFORM 20000-TRAITEMENT
-            WHEN 9
-              PERFORM 30000-END-PGM
-            WHEN OTHER
-              GOBACK
-           END-EVALUATE
-           GOBACK
-           .
-
-       10000-INIT-PGM.
-           OPEN INPUT f-error
-           .
-
-       20000-TRAITEMENT.
+           USING L-ERROR-CODE err-label.
            MOVE L-ERROR-CODE TO error-key-9
            READ f-error
            MOVE err-message TO err-label
+           GOBACK
            .
-           
-       30000-END-PGM.
-           CLOSE f-error
-           .     

@@ -28,9 +28,6 @@
            SELECT f-etatano ASSIGN ETATANO
             FILE STATUS IS CR-ETATANO.
 
-      * Voir pour ouvrir les fichiers utilisés dans les programmmes
-      * secondaires dans le programme principal
-
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
