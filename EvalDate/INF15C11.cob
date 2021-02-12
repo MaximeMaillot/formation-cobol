@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. COB1.
+       PROGRAM-ID. COBDATE.
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
        SPECIAL-NAMES.
@@ -15,6 +15,7 @@
          05 YEAR-E                 PIC 9(4).
          05 MONTH-E                PIC 9(2).
          05 DAY-E                  PIC 9(2).
+         05 EMPTY                  PIC X(4).
            
        01 MONTH-V.
          10                        PIC 99 VALUE 31.
@@ -51,6 +52,7 @@
        20000-TRAITEMENT.
            PERFORM UNTIL DATE-ENTERED = '00000000'
              perform 21000-VALIDATE-DATE
+             INITIALIZE DATE-ENTERED
              ACCEPT DATE-ENTERED
              DISPLAY LIGNE
            END-PERFORM
@@ -61,7 +63,7 @@
            .
        21000-VALIDATE-DATE.
            DISPLAY "YEAR : " YEAR-E ", MONTH : " MONTH-E, "DAY : " DAY-E
-           IF DATE-ENTERED IS NOT NUMERIC
+           IF DATE-ENTERED IS NOT NUMERIC OR EMPTY NOT = SPACE
              perform 21100-DATE-ERROR
            ELSE
              EVALUATE TRUE
@@ -82,6 +84,7 @@
                END-IF
              WHEN OTHER
                  perform 21300-DATE-VALIDE
+             END-EVALUATE
            END-IF
            .
        21100-DATE-ERROR.

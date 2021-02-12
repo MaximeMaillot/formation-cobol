@@ -22,12 +22,6 @@
            SELECT f-etatano ASSIGN ETATANO
             FILE STATUS IS CR-ETATANO.
 
-           SELECT f-error ASSIGN ERRVS
-            ORGANIZATION IS INDEXED
-            ACCESS MODE IS RANDOM
-            RECORD KEY IS error-key-x
-            FILE STATUS IS CR-ERRVS.
-
       *********************************
       *    D A T A   D I V I S I O N
       *********************************
@@ -45,24 +39,18 @@
        fd f-etatano.
        01 etatano.
            COPY CANO.
-
-       fd f-error is external
-           DATA RECORD IS e-error.
-       01 e-error.
-           02 error-key-9          pic 9(3).
-           02 error-key-x 
-            REDEFINES error-key-9  PIC x(3).
-           02 err-message          pic x(60).
-           02                      PIC X(17).
        
 
        WORKING-STORAGE SECTION.
        
        01 CR-MVT                         PIC 99.
-           88 EOF-MVT VALUE 10.
-       01 CR-ASSURES4                 PIC 99.
+           88 EOF-MVT               VALUE 10.
+       01 CR-ASSURES4                    PIC 99.
+         88 DUPLICATE-KEY           VALUE 22.
+         88 KEY-NOT-FOUND           VALUE 23.
        01 CR-ETATANO                     PIC 99.
-       01 CR-ERRVS                       PIC 99.
+
+      * --------------- COMPTEURS --------------
 
        01 CPT.
          02 CPT-FILLER.
@@ -89,11 +77,9 @@
        01 TAB-CPT REDEFINES CPT.
         02 CPT-STATS                     PIC 99 occurs 15.
 
-       77 ano-pgm                        PIC X(7) VALUE 'ETATANO'.
+      * --------------------------------------------------- 
 
-       77 I                              PIC 999.
-
-       77 ERR-CODE                       PIC 999.
+      * ------------- GESTION DATE --------------
 
        01 weekday-desc.
          COPY weekday.
@@ -109,6 +95,8 @@
          05 MINUTE-F PIC 99.
          05 SECOND-F PIC 99.
        01 WEEKDAY-F PIC 9.
+
+      * ----------------------------------------- 
 
       * -------------------- FORMAT ANO ----------------
        01 FORMAT-HEADER-TITLE-ANO.
@@ -188,11 +176,25 @@
         05 PIC x(70) value all '-'.
         05 pic x value '+'.
        
-       77 ASSURE-KEY-CHECK PIC 9.
-         88 ASSURE-KEY-FOUND value 1.
-         88 ASSURE-KEY-NOT-FOUND value 0.
-
       * -------------------------------------------------
+
+       77 ano-pgm                    PIC X(7) VALUE 'ETATANO'.
+       01 ano-pgm-param.
+         05 L-ERROR-CODE             PIC 9(3).
+         05 err-label                PIC x(60).
+         05 FLAG                     PIC 9.
+           88 flag-open value 0.
+           88 flag-continue value 5.
+           88 flag-close value 9.
+         05 CR-ERRVS                 PIC 99.
+       
+       01 ano-pgm-param-stats redefines ano-pgm-param.
+         05 I                        PIC 9(3).
+         05                          PIC X(60).
+         05                          PIC 9.
+         05                          PIC 99.
+        
+
 
       ****************************************************************
       * P R O C E D U R E   D I V I S I O N
@@ -202,10 +204,12 @@
            PERFORM 10000-INIT-PGM
            PERFORM 20000-TRAITEMENT
            PERFORM 30000-END-PGM
+
+           stop run
            .
 
        10000-INIT-PGM.
-           OPEN INPUT f-mvt f-error
+           OPEN INPUT f-mvt
            OPEN OUTPUT f-etatano
            OPEN I-O f-assures4
            perform 11000-CHECK-INIT-FILE
@@ -220,20 +224,21 @@
              DISPLAY 'ERROR MVT : ' CR-MVT 
              perform 11100-ABORT-PGM 
            END-IF
-           IF CR-ERRVS > 0
-             DISPLAY 'ERROR ERRVS : ' CR-ERRVS
-             perform 11100-ABORT-PGM
-           END-IF
+
            IF CR-ASSURES4  > 0
              DISPLAY 'ERROR ASSUR4 : ' CR-ASSURES4
              perform 11100-ABORT-PGM 
            END-IF 
+
            IF CR-ETATANO > 0
              DISPLAY 'ERROR ETATANO : ' CR-ETATANO
              perform 11100-ABORT-PGM 
            END-IF
+
+           MOVE 0 TO FLAG
+           CALL ano-pgm USING ano-pgm-param
            IF CR-ERRVS > 0
-             DISPLAY 'ERROR ETATANO : ' CR-ERRVS
+             DISPLAY 'ERROR ERRVS : ' CR-ERRVS 
              perform 11100-ABORT-PGM 
            END-IF
            .
@@ -258,16 +263,6 @@
        32000-write-ano-footer.
            write etatano from FORMAT-LIGNE-TAB-ANO
            .
-
-       18000-READ-ASSURES4.
-           MOVE MAT-MVT TO MAT-A4
-           
-           READ f-assures4
-             invalid  key
-               MOVE 0 TO ASSURE-KEY-CHECK
-             not invalid  key
-               MOVE 1 to ASSURE-KEY-CHECK
-           .
        
        19000-READ-MVT.
            READ f-mvt
@@ -275,83 +270,69 @@
            IF NOT EOF-MVT
               ADD 1 TO CPT-MVT
            END-IF
-
-           perform 18000-READ-ASSURES4
            .
 
        20000-TRAITEMENT.
+           MOVE 5 TO FLAG
+
            perform until EOF-MVT
-             perform 22000-EVALUATE-CODE-MVT
-             perform 19000-READ-MVT
+            EVALUATE CODE-MVT
+
+             WHEN 'C'
+               perform 22110-WRITE-ASSURES4
+               IF CR-ASSURES4 > 0
+                 MOVE 2 TO L-ERROR-CODE
+                 perform 22700-CALL-ANO-PGM-ANO
+               ELSE
+                 ADD 1 TO CPT-CREATE                  
+               END-IF
+
+             WHEN 'M'
+               perform 22210-REWRITE-ASSURES4
+               IF CR-ASSURES4 > 0
+                 MOVE 3 TO L-ERROR-CODE
+                 perform 22700-CALL-ANO-PGM-ANO
+               ELSE
+                 ADD 1 TO CPT-REWRITE 
+               END-IF
+
+             WHEN 'S'
+              perform 22310-DELETE-ASSURES4
+              IF CR-ASSURES4 > 0
+                 MOVE 4 TO L-ERROR-CODE
+                 perform 22700-CALL-ANO-PGM-ANO
+              ELSE
+                 ADD 1 TO CPT-DELETE
+              END-IF
+
+             WHEN OTHER
+               MOVE 1 TO L-ERROR-CODE
+               perform 22700-CALL-ANO-PGM-ANO
+
+            END-EVALUATE
+           
+           perform 19000-READ-MVT
            END-PERFORM
            .
        
        22700-CALL-ANO-PGM-ANO.
-           CALL ano-pgm USING
-                BY REFERENCE ERR-CODE
-                BY REFERENCE LIB-MESS
+           CALL ano-pgm USING BY REFERENCE ano-pgm-param
                 
            perform 22710-WRITE-ETAT-ANO
 
-           ADD 1 TO CPT-ANO-T(ERR-CODE)
+           ADD 1 TO CPT-ANO-T(L-ERROR-CODE)
            .
        
        31700-CALL-ANO-PGM-STATS.
-           CALL ano-pgm USING
-                BY REFERENCE I
-                BY REFERENCE message-erreur
-           .
-       
-       22000-EVALUATE-CODE-MVT.
-           EVALUATE CODE-MVT
-
-             WHEN 'C'
-               perform 22100-CHECK-WRITE-MVT
-
-             WHEN 'M'
-               perform 22200-CHECK-REWRITE-MVT
-
-             WHEN 'S'
-               perform 22300-CHECK-DELETE-MVT
-               
-             WHEN OTHER
-               MOVE 1 TO ERR-CODE
-               perform 22700-CALL-ANO-PGM-ANO
-
-           END-EVALUATE
+           CALL ano-pgm USING ano-pgm-param-stats 
            .
        
        22710-WRITE-ETAT-ANO.
            MOVE MAT-MVT TO NUM-MAT
            MOVE CODE-MVT TO CODE-MVT-ANO
-           write etatano
-           .
+           MOVE err-label to LIB-MESS  
 
-       22100-CHECK-WRITE-MVT.
-           IF ASSURE-KEY-NOT-FOUND 
-             perform 22110-WRITE-ASSURES4
-           ELSE
-             MOVE 2 TO ERR-CODE
-             perform 22700-CALL-ANO-PGM-ANO
-           END-IF 
-           .
-       
-       22200-CHECK-REWRITE-MVT.
-           IF ASSURE-KEY-FOUND
-             perform 22210-REWRITE-ASSURES4
-           ELSE
-             MOVE 3 TO ERR-CODE
-             perform 22700-CALL-ANO-PGM-ANO
-           END-IF
-           .
-       
-       22300-CHECK-DELETE-MVT.
-           IF ASSURE-KEY-FOUND
-             perform 22310-DELETE-ASSURES4
-           ELSE
-             MOVE 4 TO ERR-CODE
-             perform 22700-CALL-ANO-PGM-ANO
-           END-IF
+           write etatano
            .
        
        22110-WRITE-ASSURES4.
@@ -364,12 +345,12 @@
            MOVE PRIME-MVT TO PRIME-A4
            MOVE BM-MVT TO BM-A4
            MOVE TAUX-MVT TO TAUX-A4
-           write ASSURES4
 
-           ADD 1 TO CPT-CREATE
+           write ASSURES4
            .
        
        22210-REWRITE-ASSURES4.
+           MOVE MAT-MVT TO MAT-A4
            MOVE NOM-PRE-MVT TO NOM-PRE-A4 
            MOVE RUE-MVT TO RUE-A4
            MOVE CP-MVT TO CP-A4
@@ -378,25 +359,23 @@
            MOVE PRIME-MVT TO PRIME-A4
            MOVE BM-MVT TO BM-A4
            MOVE TAUX-MVT TO TAUX-A4
-           REWRITE ASSURES4
 
-           ADD 1 TO CPT-REWRITE
+           REWRITE ASSURES4
            .
 
        22310-DELETE-ASSURES4.
            DELETE f-assures4
-
-           ADD 1 TO CPT-DELETE
            .
 
        30000-END-PGM.
            close f-assures4 f-mvt
            perform 32000-write-ano-footer
+
            close f-etatano
            perform 31000-DISPLAY-STATS
-           close f-error
 
-           STOP RUN
+           MOVE 9 TO FLAG
+           CALL ano-pgm USING ano-pgm-param
            .
 
        31000-DISPLAY-STATS.
@@ -409,6 +388,7 @@
            perform VARYING I from 5 by 1 until I > 15
               perform 31700-CALL-ANO-PGM-STATS
               MOVE CPT-STATS(I) TO CPTI-F
+              MOVE err-label TO message-erreur
               DISPLAY FORMAT-ENRGMT-STATS
            END-PERFORM
 
@@ -435,7 +415,9 @@
            .
        
        11100-ABORT-PGM.
-           close f-assures4 f-mvt f-etatano f-error
+           MOVE 9 TO FLAG
+           CALL ano-pgm USING BY REFERENCE ano-pgm-param
+           close f-assures4 f-mvt f-etatano
 
            STOP RUN
            .

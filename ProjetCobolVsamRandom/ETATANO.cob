@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. PROJANO.
+       PROGRAM-ID. PROJERR.
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
        SPECIAL-NAMES.
@@ -32,13 +32,26 @@
        01 CR-ERRVS                 PIC 99.
 
        LINKAGE SECTION.
-       01 L-ERROR-CODE             PIC 9(3).
-       01 err-label                PIC x(60).
+       01 param.
+         02 L-ERROR-CODE             PIC 9(3).
+         02 err-label                PIC x(60).
+         02 flag                     PIC 9.
+           88 flag-open value 0.
+           88 flag-continue value 5.
+           88 flag-close value 9.
+         02 CR-FILE                  PIC 99.
 
-       PROCEDURE DIVISION
-           USING L-ERROR-CODE err-label.
-           MOVE L-ERROR-CODE TO error-key-9
-           READ f-error
-           MOVE err-message TO err-label
+       PROCEDURE DIVISION USING param.
+           EVALUATE true 
+             WHEN flag-continue 
+              MOVE L-ERROR-CODE TO error-key-9
+              READ f-error
+              MOVE err-message TO err-label
+              MOVE CR-ERRVS TO CR-FILE
+             WHEN flag-open
+               OPEN INPUT f-error
+             WHEN flag-close 
+              close f-error
+           END-EVALUATE
            GOBACK
            .
