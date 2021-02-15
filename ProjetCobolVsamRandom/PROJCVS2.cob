@@ -279,35 +279,35 @@
             EVALUATE CODE-MVT
 
              WHEN 'C'
-               perform 22110-WRITE-ASSURES4
+               perform 21000-WRITE-ASSURES4
                IF CR-ASSURES4 > 0
                  MOVE 2 TO L-ERROR-CODE
-                 perform 22700-CALL-ANO-PGM-ANO
+                 perform 27000-CALL-ANO-PGM-ANO
                ELSE
                  ADD 1 TO CPT-CREATE                  
                END-IF
 
              WHEN 'M'
-               perform 22210-REWRITE-ASSURES4
+               perform 22000-REWRITE-ASSURES4
                IF CR-ASSURES4 > 0
                  MOVE 3 TO L-ERROR-CODE
-                 perform 22700-CALL-ANO-PGM-ANO
+                 perform 27000-CALL-ANO-PGM-ANO
                ELSE
                  ADD 1 TO CPT-REWRITE 
                END-IF
 
              WHEN 'S'
-              perform 22310-DELETE-ASSURES4
+              perform 23000-DELETE-ASSURES4
               IF CR-ASSURES4 > 0
                  MOVE 4 TO L-ERROR-CODE
-                 perform 22700-CALL-ANO-PGM-ANO
+                 perform 27000-CALL-ANO-PGM-ANO
               ELSE
                  ADD 1 TO CPT-DELETE
               END-IF
 
              WHEN OTHER
                MOVE 1 TO L-ERROR-CODE
-               perform 22700-CALL-ANO-PGM-ANO
+               perform 27000-CALL-ANO-PGM-ANO
 
             END-EVALUATE
            
@@ -315,19 +315,19 @@
            END-PERFORM
            .
        
-       22700-CALL-ANO-PGM-ANO.
+       27000-CALL-ANO-PGM-ANO.
            CALL ano-pgm USING BY REFERENCE ano-pgm-param
                 
-           perform 22710-WRITE-ETAT-ANO
+           perform 27100-WRITE-ETAT-ANO
 
            ADD 1 TO CPT-ANO-T(L-ERROR-CODE)
            .
        
        31700-CALL-ANO-PGM-STATS.
-           CALL ano-pgm USING ano-pgm-param-stats 
+           CALL ano-pgm USING BY REFERENCE ano-pgm-param-stats 
            .
        
-       22710-WRITE-ETAT-ANO.
+       27100-WRITE-ETAT-ANO.
            MOVE MAT-MVT TO NUM-MAT
            MOVE CODE-MVT TO CODE-MVT-ANO
            MOVE err-label to LIB-MESS  
@@ -335,7 +335,7 @@
            write etatano
            .
        
-       22110-WRITE-ASSURES4.
+       21000-WRITE-ASSURES4.
            MOVE MAT-MVT TO MAT-A4 
            MOVE NOM-PRE-MVT TO NOM-PRE-A4 
            MOVE RUE-MVT TO RUE-A4
@@ -349,7 +349,7 @@
            write ASSURES4
            .
        
-       22210-REWRITE-ASSURES4.
+       22000-REWRITE-ASSURES4.
            MOVE MAT-MVT TO MAT-A4
            MOVE NOM-PRE-MVT TO NOM-PRE-A4 
            MOVE RUE-MVT TO RUE-A4
@@ -363,7 +363,7 @@
            REWRITE ASSURES4
            .
 
-       22310-DELETE-ASSURES4.
+       23000-DELETE-ASSURES4.
            DELETE f-assures4
            .
 
